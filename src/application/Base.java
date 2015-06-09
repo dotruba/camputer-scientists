@@ -49,6 +49,8 @@ public class Base implements ActionListener
 		JLabel adminLabel = new JLabel("Administrator");
 		JLabel cLabel = new JLabel("Counsellor");
 		JLabel camperLabel = new JLabel("Camper");
+		JLabel menuQuestion = new JLabel("Are you a:");
+		
 
 
 		usernameField = new JTextField(10);
@@ -56,6 +58,10 @@ public class Base implements ActionListener
 		passwordField.setEchoChar('*');
 
 		JButton loginButton = new JButton("Log In");
+		
+		JButton adminButton = new JButton("Administrator");
+		JButton cButton = new JButton("Counsellor");
+		JButton camperButton = new JButton("Camper");
 
 		JPanel contentPane = new JPanel();
 		JPanel menuPane = new JPanel();
@@ -74,21 +80,30 @@ public class Base implements ActionListener
 		menuPane.setLayout(gb);
 		menuPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-		// place the labels for users
-		c.gridwidth = GridBagConstraints.RELATIVE;
+		// place the buttons and label for main menu
+		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(10, 10, 5, 0);
-		gb.setConstraints(adminLabel, c);
-		menuPane.add(adminLabel);
+		c.anchor = GridBagConstraints.CENTER;
+		gb.setConstraints(menuQuestion, c);
+		menuPane.add(menuQuestion);
 
-		c.gridwidth = GridBagConstraints.RELATIVE;
-		c.insets = new Insets(0, 10, 10, 0);
-		gb.setConstraints(cLabel, c);
-		menuPane.add(cLabel);
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.insets = new Insets(10, 10, 5, 0);
+		c.anchor = GridBagConstraints.CENTER;
+		gb.setConstraints(adminButton, c);
+		menuPane.add(adminButton);
 
-		c.gridwidth = GridBagConstraints.RELATIVE;
-		c.insets = new Insets(0, 5, 5, 0);
-		gb.setConstraints(camperLabel, c);
-		menuPane.add(camperLabel);
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.insets = new Insets(10, 10, 5, 0);
+		c.anchor = GridBagConstraints.CENTER;
+		gb.setConstraints(cButton, c);
+		menuPane.add(cButton);
+		
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.insets = new Insets(10, 10, 5, 0);
+		c.anchor = GridBagConstraints.CENTER;
+		gb.setConstraints(camperButton, c);
+		menuPane.add(camperButton);
 
 		// place the username label 
 		c.gridwidth = GridBagConstraints.RELATIVE;
@@ -153,11 +168,11 @@ public class Base implements ActionListener
 
 		Dimension d2 = menuFrame.getToolkit().getScreenSize();
 		Rectangle r2 = menuFrame.getBounds();
-		menuFrame.setLocation( (d.width - r2.width)/2, (d2.height - r2.height)/2 );
+		menuFrame.setLocation( (d2.width - r2.width)/2, (d2.height - r2.height)/2 );
 
 		// make the window visible
 		mainFrame.setVisible(true);
-		menuFrame.setVisible(true);
+		
 
 		// place the cursor in the text field for the username
 		usernameField.requestFocus();
@@ -207,6 +222,7 @@ public class Base implements ActionListener
 			// if the username and password are valid, 
 			// remove the login window and display a text menu 
 			mainFrame.dispose();
+			menuFrame.setVisible(true);
 			// showMenu();     
 		}
 		else
