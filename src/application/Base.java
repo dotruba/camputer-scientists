@@ -62,9 +62,11 @@ public class Base implements ActionListener
 		JButton adminButton = new JButton("Administrator");
 		JButton cButton = new JButton("Counsellor");
 		JButton camperButton = new JButton("Camper");
+		
+		CardLayout cl = new CardLayout();
 
 		JPanel contentPane = new JPanel();
-		JPanel menuPane = new JPanel();
+		JPanel menuPane = new JPanel(cl);
 		mainFrame.setContentPane(contentPane);
 		menuFrame.setContentPane(menuPane);
 
@@ -139,6 +141,12 @@ public class Base implements ActionListener
 		// register password field and OK button with action event handler
 		passwordField.addActionListener(this);
 		loginButton.addActionListener(this);
+		
+		adminButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cl.next(menuFrame);
+            }});
 
 		// anonymous inner class for closing the window
 		mainFrame.addWindowListener(new WindowAdapter() 
