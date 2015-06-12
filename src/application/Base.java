@@ -31,6 +31,9 @@ public class Base implements ActionListener
 	private JPasswordField passwordField;
 	private JFrame mainFrame;
 	private JFrame menuFrame;
+	
+	private final CardLayout cl = new CardLayout();
+	private final JPanel pages = new JPanel(cl);
 
 
 
@@ -46,12 +49,11 @@ public class Base implements ActionListener
 		JLabel usernameLabel = new JLabel("Enter username: ");
 		JLabel passwordLabel = new JLabel("Enter password: ");
 
-		JLabel adminLabel = new JLabel("Administrator");
-		JLabel cLabel = new JLabel("Counsellor");
-		JLabel camperLabel = new JLabel("Camper");
 		JLabel menuQuestion = new JLabel("Are you a:");
+		JLabel adminQuestion = new JLabel("What would you like to do?");
+		JLabel counsellorQuestion = new JLabel("What would you like to do?");
+		JLabel camperQuestion = new JLabel("Please select one of the following");
 		
-
 
 		usernameField = new JTextField(10);
 		passwordField = new JPasswordField(10);
@@ -59,14 +61,20 @@ public class Base implements ActionListener
 
 		JButton loginButton = new JButton("Log In");
 		
+	//Buttons
+		JButton backToUser = new JButton("Return to user selection.");
+		JButton backToUser2 = new JButton("Return to user selection.");
+		JButton backToUser3 = new JButton("Return to user selection.");
 		JButton adminButton = new JButton("Administrator");
 		JButton cButton = new JButton("Counsellor");
 		JButton camperButton = new JButton("Camper");
 		
-		CardLayout cl = new CardLayout();
+		JButton registeredB = new JButton("I'm a registered camper.");
+		JButton notRegisteredB = new JButton("I'm not yet registered.");
+		
 
 		JPanel contentPane = new JPanel();
-		JPanel menuPane = new JPanel(cl);
+		JPanel menuPane = new JPanel();
 		mainFrame.setContentPane(contentPane);
 		menuFrame.setContentPane(menuPane);
 
@@ -82,31 +90,123 @@ public class Base implements ActionListener
 		menuPane.setLayout(gb);
 		menuPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+		
+		// add the pages to main menu
+		JPanel userSelect = new JPanel(new GridBagLayout());
+		pages.add(userSelect, "users");
+		
+		JPanel adminPanel = new JPanel(new GridBagLayout());
+		pages.add(adminPanel, "admin");
+		
+		JPanel counsellorPanel = new JPanel(new GridBagLayout());
+		pages.add(counsellorPanel, "counsellor");
+		
+		JPanel camperPanel = new JPanel(new GridBagLayout());
+		pages.add(camperPanel, "camper");
+		
+		
 		// place the buttons and label for main menu
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(10, 10, 5, 0);
 		c.anchor = GridBagConstraints.CENTER;
 		gb.setConstraints(menuQuestion, c);
-		menuPane.add(menuQuestion);
+		userSelect.add(menuQuestion);
 
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(10, 10, 5, 0);
 		c.anchor = GridBagConstraints.CENTER;
 		gb.setConstraints(adminButton, c);
-		menuPane.add(adminButton);
+		userSelect.add(adminButton);
+		// admin button functionality
+		adminButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cl.show(pages, "admin");
+            }});
 
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(10, 10, 5, 0);
 		c.anchor = GridBagConstraints.CENTER;
 		gb.setConstraints(cButton, c);
-		menuPane.add(cButton);
-		
+		userSelect.add(cButton);
+		// counsellor button functionality
+		cButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cl.show(pages, "counsellor");
+			}});
+
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(10, 10, 5, 0);
 		c.anchor = GridBagConstraints.CENTER;
 		gb.setConstraints(camperButton, c);
-		menuPane.add(camperButton);
+		userSelect.add(camperButton);
+		// camper button functionality
+		camperButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cl.show(pages, "camper");
+			}});
 
+// populate sub-pages with stuff
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.insets = new Insets(10, 10, 5, 0);
+		c.anchor = GridBagConstraints.CENTER;
+		gb.setConstraints(adminQuestion, c);
+		adminPanel.add(adminQuestion);
+		
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.insets = new Insets(10, 10, 5, 0);
+		c.anchor = GridBagConstraints.CENTER;
+		gb.setConstraints(counsellorQuestion, c);
+		counsellorPanel.add(counsellorQuestion);
+		
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.insets = new Insets(10, 10, 5, 0);
+		c.anchor = GridBagConstraints.CENTER;
+		gb.setConstraints(registeredB, c);
+		camperPanel.add(registeredB);
+		
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.insets = new Insets(10, 10, 5, 0);
+		c.anchor = GridBagConstraints.CENTER;
+		gb.setConstraints(notRegisteredB, c);
+		camperPanel.add(notRegisteredB);
+		
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.insets = new Insets(10, 10, 5, 0);
+		c.anchor = GridBagConstraints.CENTER;
+		gb.setConstraints(backToUser, c);
+		adminPanel.add(backToUser);
+		// return to user select button functionality
+		backToUser.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cl.show(pages, "users");
+            }});
+		
+	
+		gb.setConstraints(backToUser2, c);
+		counsellorPanel.add(backToUser2);
+		// return to user select button functionality
+		backToUser2.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cl.show(pages, "users");
+			}});
+		
+		gb.setConstraints(backToUser3, c);
+		camperPanel.add(backToUser3);
+		// return to user select button functionality
+		backToUser3.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cl.show(pages, "users");
+			}});
+		
+		menuPane.add(pages);
+		
+//login related stuff:
 		// place the username label 
 		c.gridwidth = GridBagConstraints.RELATIVE;
 		c.insets = new Insets(10, 10, 5, 0);
@@ -142,11 +242,6 @@ public class Base implements ActionListener
 		passwordField.addActionListener(this);
 		loginButton.addActionListener(this);
 		
-		adminButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cl.next(menuFrame);
-            }});
 
 		// anonymous inner class for closing the window
 		mainFrame.addWindowListener(new WindowAdapter() 
