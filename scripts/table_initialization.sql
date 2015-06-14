@@ -59,7 +59,9 @@ create table Cabin(
 create table Counsellor(
 	id number(9,0) primary key,
 	name varchar2(50),
+	camp_name varchar2(50) not null,
 	cabin_id number(9,0) not null,
+	foreign key (camp_name) references Camp(name),
 	foreign key (cabin_id) references Cabin(id)
 );
 create table CampOffers(
