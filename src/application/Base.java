@@ -97,8 +97,6 @@ public class Base implements ActionListener
 		JButton notRegisteredB = new JButton("I'm a new camper.");
 		
 
-		final CardLayout cl = new CardLayout();
-
 
 		JPanel contentPane = new JPanel();
 		JPanel menuPane = new JPanel();
