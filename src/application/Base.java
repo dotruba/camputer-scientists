@@ -35,6 +35,14 @@ public class Base implements ActionListener
 	private final CardLayout cl = new CardLayout();
 	private final JPanel pages = new JPanel(cl);
 
+	// textfields
+	private JTextField registerPhone = new JTextField(10);
+	private JTextField registerName = new JTextField(20);
+	private JTextField registerSession = new JTextField(10);
+	private JTextField registerPay = new JTextField(20);
+	
+	private JTextField findActivitybyCampTxt = new JTextField(20);
+	private JTextField findCampbyActivityTxt = new JTextField(20);
 
 
 
@@ -52,7 +60,16 @@ public class Base implements ActionListener
 		JLabel menuQuestion = new JLabel("Are you a:");
 		JLabel adminQuestion = new JLabel("What would you like to do?");
 		JLabel counsellorQuestion = new JLabel("What would you like to do?");
-		JLabel camperQuestion = new JLabel("Please select one of the following");
+		JLabel camperQuestion = new JLabel("What would you like to do? ");
+		JLabel searchActivitybyCamp = new JLabel("Enter a camp to find the activities it offers: ");
+		JLabel searchCampbyActivity = new JLabel("Enter one or more activities (seperated by comma) to find camps that offer them");
+		
+		JLabel registerNameLabel = new JLabel("Name: ");
+		JLabel registerPhoneLabel = new JLabel("Phone: ");
+		JLabel registerSessionLabel = new JLabel("Enter session: ");
+		JLabel registerPayLabel = new JLabel("Enter payment: ");
+		
+		
 		
 
 		usernameField = new JTextField(10);
@@ -61,16 +78,22 @@ public class Base implements ActionListener
 
 		JButton loginButton = new JButton("Log In");
 		
-	//Buttons
+//Buttons
 		JButton backToUser = new JButton("Return to user selection.");
 		JButton backToUser2 = new JButton("Return to user selection.");
 		JButton backToUser3 = new JButton("Return to user selection.");
+		JButton backToCamperSelect = new JButton("Return to last page.");
 		JButton adminButton = new JButton("Administrator");
 		JButton cButton = new JButton("Counsellor");
 		JButton camperButton = new JButton("Camper");
 		
+		JButton registerNowButton = new JButton("Register Now");
+		
+		JButton activitybyCampButton = new JButton("Find");
+		JButton campbyActivityButton = new JButton("Find");
+		
 		JButton registeredB = new JButton("I'm a registered camper.");
-		JButton notRegisteredB = new JButton("I'm not yet registered.");
+		JButton notRegisteredB = new JButton("I'm a new camper.");
 		
 
 		JPanel contentPane = new JPanel();
@@ -79,7 +102,7 @@ public class Base implements ActionListener
 		menuFrame.setContentPane(menuPane);
 
 
-		// layout components using the GridBag layout manager
+// layout components using the GridBag layout manager
 
 		GridBagLayout gb = new GridBagLayout();
 		GridBagConstraints c = new GridBagConstraints();
@@ -91,7 +114,7 @@ public class Base implements ActionListener
 		menuPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
 		
-		// add the pages to main menu
+// add the pages to main menu
 		JPanel userSelect = new JPanel(new GridBagLayout());
 		pages.add(userSelect, "users");
 		
@@ -104,8 +127,14 @@ public class Base implements ActionListener
 		JPanel camperPanel = new JPanel(new GridBagLayout());
 		pages.add(camperPanel, "camper");
 		
+		JPanel registerPage = new JPanel(new GridBagLayout());
+		pages.add(registerPage, "register");
 		
-		// place the buttons and label for main menu
+		JPanel camperQuery = new JPanel(new GridBagLayout());
+		pages.add(camperQuery, "camperQuery");
+		
+		
+// place the buttons and label for main menu
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(10, 10, 5, 0);
 		c.anchor = GridBagConstraints.CENTER;
@@ -166,12 +195,23 @@ public class Base implements ActionListener
 		c.anchor = GridBagConstraints.CENTER;
 		gb.setConstraints(registeredB, c);
 		camperPanel.add(registeredB);
+		registeredB.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cl.show(pages, "camperQuery");
+            }});
 		
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(10, 10, 5, 0);
 		c.anchor = GridBagConstraints.CENTER;
 		gb.setConstraints(notRegisteredB, c);
 		camperPanel.add(notRegisteredB);
+		notRegisteredB.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cl.show(pages, "register");
+            }});
+		
 		
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(10, 10, 5, 0);
@@ -203,6 +243,55 @@ public class Base implements ActionListener
 			public void actionPerformed(ActionEvent e) {
 				cl.show(pages, "users");
 			}});
+		
+		//register page
+		gb.setConstraints(registerNameLabel, c);
+		registerPage.add(registerNameLabel);
+		gb.setConstraints(registerName, c);
+		registerPage.add(registerName);
+		gb.setConstraints(registerPhoneLabel, c);
+		registerPage.add(registerPhoneLabel);
+		gb.setConstraints(registerPhone, c);
+		registerPage.add(registerPhone);
+		gb.setConstraints(registerSessionLabel, c);
+		registerPage.add(registerSessionLabel);
+		gb.setConstraints(registerSession, c);
+		registerPage.add(registerSession);
+		gb.setConstraints(registerPayLabel, c);
+		registerPage.add(registerPayLabel);
+		gb.setConstraints(registerPay, c);
+		registerPage.add(registerPay);
+		gb.setConstraints(registerNowButton, c);
+		registerPage.add(registerNowButton);
+		
+		gb.setConstraints(backToCamperSelect, c);
+		registerPage.add(backToCamperSelect);
+		backToCamperSelect.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cl.show(pages, "camper");
+			}});
+		
+		//camper query page
+		gb.setConstraints(camperQuestion, c);
+		camperQuery.add(camperQuestion);
+		gb.setConstraints(searchActivitybyCamp, c);
+		camperQuery.add(searchActivitybyCamp);
+		gb.setConstraints(findActivitybyCampTxt, c);
+		camperQuery.add(findActivitybyCampTxt);
+		gb.setConstraints(activitybyCampButton, c);
+		camperQuery.add(activitybyCampButton);
+		gb.setConstraints(searchCampbyActivity, c);
+		camperQuery.add(searchCampbyActivity);
+		gb.setConstraints(findCampbyActivityTxt, c);
+		camperQuery.add(findCampbyActivityTxt);
+		gb.setConstraints(campbyActivityButton, c);
+		camperQuery.add(campbyActivityButton);
+		
+		
+		
+		
+
 		
 		menuPane.add(pages);
 		
