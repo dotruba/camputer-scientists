@@ -2,12 +2,13 @@ package application;
 
 // We need to import the java.sql package to use JDBC
 import java.sql.*;
-
+import java.util.ArrayList;
 // for reading from the command line
 import java.io.*;
 
 // for the login window
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -18,6 +19,17 @@ import java.awt.event.*;
  */ 
 public class Base implements ActionListener
 {
+	// list of activities
+	private ArrayList<String> activityList;
+	// Arraylist of checkboxes
+	private ArrayList<JCheckBox> boxList = new ArrayList<JCheckBox>();
+	// list of sessions
+	private ArrayList<String> session = new ArrayList<String>();
+	
+	//drop down menu
+	private JComboBox selectSession = new JComboBox();
+	
+	
 	// command line reader 
 	private BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
@@ -51,6 +63,22 @@ public class Base implements ActionListener
 	 */ 
 	public Base()
 	{
+		
+//initializing session drop down menu
+		session.add("week1");
+		session.add("week2");
+		session.add("week3");
+		for(int i=0; i<session.size();i++){
+			selectSession.addItem(session.get(i));
+		}
+
+//populating dummy activity list
+		activityList = new ArrayList<String>();
+		activityList.add("swim");
+		activityList.add("basketball");
+		activityList.add("hockey");
+		createCheckBox();
+		
 		mainFrame = new JFrame("User Login");
 		menuFrame = new JFrame("Main Menu");
 
@@ -62,11 +90,11 @@ public class Base implements ActionListener
 		JLabel counsellorQuestion = new JLabel("What would you like to do?");
 		JLabel camperQuestion = new JLabel("What would you like to do? ");
 		JLabel searchActivitybyCamp = new JLabel("Enter a camp to find the activities it offers: ");
-		JLabel searchCampbyActivity = new JLabel("Enter one or more activities (seperated by comma) to find camps that offer them");
+		JLabel searchCampbyActivity = new JLabel("Find camp(s) that offers all of the selected activities: ");
 		
 		JLabel registerNameLabel = new JLabel("Name: ");
 		JLabel registerPhoneLabel = new JLabel("Phone: ");
-		JLabel registerSessionLabel = new JLabel("Enter session: ");
+		JLabel registerSessionLabel = new JLabel("Select a session: ");
 		JLabel registerPayLabel = new JLabel("Enter payment: ");
 		
 		
@@ -116,21 +144,33 @@ public class Base implements ActionListener
 		
 // add the pages to main menu
 		JPanel userSelect = new JPanel(new GridBagLayout());
+		userSelect.setLayout(gb);
+		userSelect.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		pages.add(userSelect, "users");
 		
 		JPanel adminPanel = new JPanel(new GridBagLayout());
+		adminPanel.setLayout(gb);
+		adminPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		pages.add(adminPanel, "admin");
 		
 		JPanel counsellorPanel = new JPanel(new GridBagLayout());
+		counsellorPanel.setLayout(gb);
+		counsellorPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		pages.add(counsellorPanel, "counsellor");
 		
 		JPanel camperPanel = new JPanel(new GridBagLayout());
+		camperPanel.setLayout(gb);
+		camperPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		pages.add(camperPanel, "camper");
 		
 		JPanel registerPage = new JPanel(new GridBagLayout());
+		registerPage.setLayout(gb);
+		registerPage.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		pages.add(registerPage, "register");
 		
 		JPanel camperQuery = new JPanel(new GridBagLayout());
+		camperQuery.setLayout(gb);
+		camperQuery.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		pages.add(camperQuery, "camperQuery");
 		
 		
@@ -178,11 +218,24 @@ public class Base implements ActionListener
 			}});
 
 // populate sub-pages with stuff
+		//admin panel
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(10, 10, 5, 0);
 		c.anchor = GridBagConstraints.CENTER;
 		gb.setConstraints(adminQuestion, c);
 		adminPanel.add(adminQuestion);
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.insets = new Insets(10, 10, 5, 0);
+		c.anchor = GridBagConstraints.CENTER;
+		gb.setConstraints(backToUser, c);
+		adminPanel.add(backToUser);
+		// return to user select button functionality
+		backToUser.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cl.show(pages, "users");
+            }});
+		
 		
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(10, 10, 5, 0);
@@ -210,19 +263,6 @@ public class Base implements ActionListener
             @Override
             public void actionPerformed(ActionEvent e) {
                 cl.show(pages, "register");
-            }});
-		
-		
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.insets = new Insets(10, 10, 5, 0);
-		c.anchor = GridBagConstraints.CENTER;
-		gb.setConstraints(backToUser, c);
-		adminPanel.add(backToUser);
-		// return to user select button functionality
-		backToUser.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cl.show(pages, "users");
             }});
 		
 	
@@ -255,6 +295,10 @@ public class Base implements ActionListener
 		registerPage.add(registerPhone);
 		gb.setConstraints(registerSessionLabel, c);
 		registerPage.add(registerSessionLabel);
+		
+		gb.setConstraints(selectSession, c);
+		registerPage.add(selectSession);
+		
 		gb.setConstraints(registerSession, c);
 		registerPage.add(registerSession);
 		gb.setConstraints(registerPayLabel, c);
@@ -275,25 +319,59 @@ public class Base implements ActionListener
 		//camper query page
 		gb.setConstraints(camperQuestion, c);
 		camperQuery.add(camperQuestion);
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.insets = new Insets(0, 0, 0, 0);
+		c.anchor = GridBagConstraints.WEST;
 		gb.setConstraints(searchActivitybyCamp, c);
 		camperQuery.add(searchActivitybyCamp);
+		c.gridwidth = GridBagConstraints.RELATIVE;
+		c.insets = new Insets(0, 0, 0, 0);
+		c.anchor = GridBagConstraints.WEST;
 		gb.setConstraints(findActivitybyCampTxt, c);
 		camperQuery.add(findActivitybyCampTxt);
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.insets = new Insets(10, 10, 5, 0);
+		c.anchor = GridBagConstraints.WEST;
 		gb.setConstraints(activitybyCampButton, c);
 		camperQuery.add(activitybyCampButton);
+		activitybyCampButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Popup.infoBox("Nothing here yo!", "Go away!");
+			}});
+		
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.insets = new Insets(10, 10, 5, 0);
+		c.anchor = GridBagConstraints.WEST;
 		gb.setConstraints(searchCampbyActivity, c);
 		camperQuery.add(searchCampbyActivity);
-		gb.setConstraints(findCampbyActivityTxt, c);
-		camperQuery.add(findCampbyActivityTxt);
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.insets = new Insets(0, 0, 0, 0);
+		c.anchor = GridBagConstraints.WEST;
+		
+		for(int i=0; i<boxList.size();i++){
+			JCheckBox box = boxList.get(i);
+			gb.setConstraints(box, c);
+			camperQuery.add(box);
+		}
+		
+		
+		//gb.setConstraints(findCampbyActivityTxt, c);
+		//camperQuery.add(findCampbyActivityTxt);
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.insets = new Insets(10, 10, 5, 0);
+		c.anchor = GridBagConstraints.WEST;
 		gb.setConstraints(campbyActivityButton, c);
 		camperQuery.add(campbyActivityButton);
-		
-		
-		
 		
 
 		
 		menuPane.add(pages);
+		
+
+
+		
+		
 		
 //login related stuff:
 		// place the username label 
@@ -378,6 +456,17 @@ public class Base implements ActionListener
 		}
 	}
 
+//Creating activity check boxes
+	private void createCheckBox() {
+		for(int i = 0; i<activityList.size();i++){
+			String label;
+			label = activityList.get(i);
+			
+			JCheckBox box = new JCheckBox(label);
+			boxList.add(box);
+		}
+	}
+
 
 	/*
 	 * connects to Oracle database named ug using user supplied username and password
@@ -399,8 +488,6 @@ public class Base implements ActionListener
 			return false;
 		}
 	}
-
-
 	/*
 	 * event handler for login window
 	 */ 
@@ -429,7 +516,6 @@ public class Base implements ActionListener
 				passwordField.setText("");
 			}
 		}             
-
 	}
 
 
