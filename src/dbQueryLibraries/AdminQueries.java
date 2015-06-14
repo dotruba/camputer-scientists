@@ -6,7 +6,7 @@ import java.util.*;
 public class AdminQueries {
 	
 	//6.9
-	public void assignCabinSupervisor(Connection con, String cabinID, String counsellor) throws SQLException
+	public void assignCabinSupervisor(Connection con, int cabinID, String counsellor) throws SQLException
 	{
 		PreparedStatement ps = con.prepareStatement(
 			"SELECT fid " +
@@ -16,7 +16,7 @@ public class AdminQueries {
 							"FROM Camp ca, Counsellor co " +
 							"WHERE co.camp_name = ca.name " +
 								"AND co.name = ?");
-		ps.setString(1, cabinID);
+		ps.setInt(1, cabinID);
 		ps.setString(2, counsellor);
 		
 		ResultSet rs = ps.executeQuery();
@@ -31,7 +31,7 @@ public class AdminQueries {
 				"UPDATE Counsellor " + 
 				"SET cabin_id = ? " +
 				"WHERE name = ?");
-			ps.setString(1, cabinID);
+			ps.setInt(1, cabinID);
 			ps.setString(2, counsellor);
 			int rowCount = ps.executeUpdate();
 			
