@@ -115,6 +115,34 @@ public class AdminQueries {
 		ps.close();
 	}
 	
+	//6.12
+	public void deleteCamper(Connection con, int camperID) throws SQLException{
+		PreparedStatement ps = con.prepareStatement(
+			"SELECT fid " +
+			"FROM Camper " +
+			"WHERE id = ? ");
+		ps.setInt(1, camperID);
+		
+		ResultSet rs = ps.executeQuery();
+		ps.clearBatch();
+		ps.clearParameters();
+		
+		if (!rs.isBeforeFirst() ) {    
+			 System.out.println("Error - Camper does not exist");
+		} 
+		else {
+			ps = con.prepareStatement(
+				"DELETE FROM Camper " + 
+				"WHERE id = ?");
+			ps.setInt(1, camperID);
+			int rowCount = ps.executeUpdate();
+			
+			System.out.println("Completed, " + rowCount + "lines deleted.");
+		}
+		
+		ps.close();
+	}
+	
 	//6.13
 	public ArrayList<String> checkRegPayments(Connection con, String camp_name) throws SQLException
 	{
