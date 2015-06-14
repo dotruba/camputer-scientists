@@ -87,6 +87,7 @@ public class Base implements ActionListener
 		JButton cButton = new JButton("Counsellor");
 		JButton camperButton = new JButton("Camper");
 		
+
 		JButton registerNowButton = new JButton("Register Now");
 		
 		JButton activitybyCampButton = new JButton("Find");
@@ -96,13 +97,14 @@ public class Base implements ActionListener
 		JButton notRegisteredB = new JButton("I'm a new camper.");
 		
 
+		final CardLayout cl = new CardLayout();
+
+
 		JPanel contentPane = new JPanel();
 		JPanel menuPane = new JPanel();
 		mainFrame.setContentPane(contentPane);
 		menuFrame.setContentPane(menuPane);
 
-
-// layout components using the GridBag layout manager
 
 		GridBagLayout gb = new GridBagLayout();
 		GridBagConstraints c = new GridBagConstraints();
@@ -357,10 +359,7 @@ public class Base implements ActionListener
 		Dimension d = mainFrame.getToolkit().getScreenSize();
 		Rectangle r = mainFrame.getBounds();
 		mainFrame.setLocation( (d.width - r.width)/2, (d.height - r.height)/2 );
-
-		Dimension d2 = menuFrame.getToolkit().getScreenSize();
-		Rectangle r2 = menuFrame.getBounds();
-		menuFrame.setLocation( (d2.width - r2.width)/2, (d2.height - r2.height)/2 );
+		menuFrame.setLocation( (d.width - r.width)/2, (d.height - r.height)/2 );
 
 		// make the window visible
 		mainFrame.setVisible(true);
