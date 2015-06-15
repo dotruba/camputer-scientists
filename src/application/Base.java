@@ -47,15 +47,31 @@ public class Base implements ActionListener
 	private final CardLayout cl = new CardLayout();
 	private final JPanel pages = new JPanel(cl);
 
-	// textfields
+// textfields
 	private JTextField registerPhone = new JTextField(10);
 	private JTextField registerName = new JTextField(20);
 	private JTextField registerSession = new JTextField(10);
 	private JTextField registerPay = new JTextField(20);
 	
+	private JTextField cabinIDtxt = new JTextField(10);
+	private JTextField counsellorTxt = new JTextField(10);
+	
+	private JTextField campName = new JTextField(10);
+	private JTextField insID = new JTextField(10);
+	
+	private JTextField regNum = new JTextField(10);
+	private JTextField insReg = new JTextField(10);
+	
+	private JTextField multicamp = new JTextField(10);
+	
+	private JTextField checkRegTxt = new JTextField(10);
+	
 	private JTextField findActivitybyCampTxt = new JTextField(20);
-	private JTextField findCampbyActivityTxt = new JTextField(20);
+	//private JTextField findCampbyActivityTxt = new JTextField(20);
+	private JTextField insIDsupervise = new JTextField(10);
+	private JTextField cabinCamperID = new JTextField(10);
 
+	
 
 
 	/*
@@ -97,6 +113,24 @@ public class Base implements ActionListener
 		JLabel registerSessionLabel = new JLabel("Select a session: ");
 		JLabel registerPayLabel = new JLabel("Enter payment: ");
 		
+		JLabel cabinSupervisorLabel = new JLabel("Assign counsellor to supervise a cabin: ");
+		JLabel cabinLabel = new JLabel("Cabin ID: ");
+		JLabel counsellorLabel = new JLabel("Counsellor: ");
+		
+		JLabel setWorkAtLabel = new JLabel("Assign counsellor to work at the camp: ");
+		JLabel instructorWorkAtLabel = new JLabel("Counsellor ID:  ");
+		JLabel campNameLabel = new JLabel("Camp Name: ");
+		
+		JLabel multicampLabel = new JLabel("Enter campers and find those who registered for more than 1 camp: ");
+		
+		JLabel assignRegLabel = new JLabel("Assign registration to a counsellor: ");
+		JLabel regLabel = new JLabel("Confirmation#: ");
+		JLabel insRegLabel = new JLabel("Counsellor ID: ");
+		
+		JLabel checkRegLabel = new JLabel("Check registration payment: ");
+		
+		JLabel superviseCheckLabel = new JLabel("Enter your ID to check the campers under your supervision: ");
+		JLabel camperCabinLabel = new JLabel("Enter camper's ID to assign him/her to cabin: "); 
 		
 		
 
@@ -111,18 +145,29 @@ public class Base implements ActionListener
 		JButton backToUser2 = new JButton("Return to user selection.");
 		JButton backToUser3 = new JButton("Return to user selection.");
 		JButton backToCamperSelect = new JButton("Return to last page.");
+		JButton backToCamperSelect2 = new JButton("Return to last page.");
 		JButton adminButton = new JButton("Administrator");
 		JButton cButton = new JButton("Counsellor");
 		JButton camperButton = new JButton("Camper");
+		JButton completePaymentButton = new JButton("Complete payment");
+		JButton cancelRegButton = new JButton("Cancel registration");
+		JButton changeSessionButton = new JButton("Change registered session");
 		
+		JButton cabinSupervisorButton = new JButton("Assign");
+		JButton workAtButton = new JButton("Assign");
+		JButton assignRegButton = new JButton("Assign");
+		JButton multicampButton = new JButton("Find");
+		
+		JButton worklessInstructorButton = new JButton("Find idle counsellor");
 
 		JButton registerNowButton = new JButton("Register Now");
-		
 		JButton activitybyCampButton = new JButton("Find");
 		JButton campbyActivityButton = new JButton("Find");
-		
 		JButton registeredB = new JButton("I'm a registered camper.");
 		JButton notRegisteredB = new JButton("I'm a new camper.");
+		
+		JButton superviseCheckButton = new JButton("Check");
+		JButton camperCabinButton = new JButton("Assign");
 		
 
 
@@ -173,6 +218,11 @@ public class Base implements ActionListener
 		camperQuery.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		pages.add(camperQuery, "camperQuery");
 		
+		JPanel completePayment = new JPanel(new GridBagLayout());
+		completePayment.setLayout(gb);
+		completePayment.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		pages.add(completePayment, "pay");
+		
 		
 // place the buttons and label for main menu
 		c.gridwidth = GridBagConstraints.REMAINDER;
@@ -218,15 +268,90 @@ public class Base implements ActionListener
 			}});
 
 // populate sub-pages with stuff
-		//admin panel
+//admin panel
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(10, 10, 5, 0);
 		c.anchor = GridBagConstraints.CENTER;
 		gb.setConstraints(adminQuestion, c);
 		adminPanel.add(adminQuestion);
+		
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.insets = new Insets(0, 0, 0, 0);
+		c.anchor = GridBagConstraints.WEST;
+		gb.setConstraints(cabinSupervisorLabel, c);
+		adminPanel.add(cabinSupervisorLabel);
+		c.gridwidth = GridBagConstraints.RELATIVE;
+		c.insets = new Insets(0, 0, 0, 0);
+		c.anchor = GridBagConstraints.WEST;
+		gb.setConstraints(cabinLabel, c);
+		adminPanel.add(cabinLabel);
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		gb.setConstraints(cabinIDtxt, c);
+		adminPanel.add(cabinIDtxt);
+		c.gridwidth = GridBagConstraints.RELATIVE;
+		gb.setConstraints(counsellorLabel, c);
+		adminPanel.add(counsellorLabel);
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		gb.setConstraints(counsellorTxt, c);
+		adminPanel.add(counsellorTxt);
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.anchor = GridBagConstraints.WEST;
+		c.insets = new Insets(0, 0, 0, 0);
+		gb.setConstraints(cabinSupervisorButton, c);
+		adminPanel.add(cabinSupervisorButton);
+		
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.anchor = GridBagConstraints.WEST;
+		c.insets = new Insets(0, 0, 0, 0);
+		gb.setConstraints(setWorkAtLabel, c);
+		adminPanel.add(setWorkAtLabel);
+		gb.setConstraints(instructorWorkAtLabel, c);
+		adminPanel.add(instructorWorkAtLabel);
+		gb.setConstraints(insID, c);
+		adminPanel.add(insID);
+		gb.setConstraints(campNameLabel, c);
+		adminPanel.add(campNameLabel);
+		gb.setConstraints(campName, c);
+		adminPanel.add(campName);
+		gb.setConstraints(workAtButton, c);
+		adminPanel.add(workAtButton);
+		
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.anchor = GridBagConstraints.WEST;
+		c.insets = new Insets(0, 0, 0, 0);
+		gb.setConstraints(assignRegLabel, c);
+		adminPanel.add(assignRegLabel);
+		gb.setConstraints(regLabel, c);
+		adminPanel.add(regLabel);
+		gb.setConstraints(regNum, c);
+		adminPanel.add(regNum);
+		gb.setConstraints(insRegLabel, c);
+		adminPanel.add(insRegLabel);
+		gb.setConstraints(insReg, c);
+		adminPanel.add(insReg);
+		gb.setConstraints(assignRegButton, c);
+		adminPanel.add(assignRegButton);
+		
+		gb.setConstraints(multicampLabel, c);
+		adminPanel.add(multicampLabel);
+		gb.setConstraints(multicamp, c);
+		adminPanel.add(multicamp);
+		gb.setConstraints(multicampButton, c);
+		adminPanel.add(multicampButton);
+		
+		gb.setConstraints(checkRegLabel, c);
+		adminPanel.add(checkRegLabel);
+		gb.setConstraints(checkRegTxt, c);
+		adminPanel.add(checkRegTxt);
+		
+		gb.setConstraints(worklessInstructorButton, c);
+		adminPanel.add(worklessInstructorButton);
+		
+		
+		
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(10, 10, 5, 0);
-		c.anchor = GridBagConstraints.CENTER;
+		c.anchor = GridBagConstraints.WEST;
 		gb.setConstraints(backToUser, c);
 		adminPanel.add(backToUser);
 		// return to user select button functionality
@@ -236,12 +361,39 @@ public class Base implements ActionListener
                 cl.show(pages, "users");
             }});
 		
-		
+//Counsellor page:
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(10, 10, 5, 0);
 		c.anchor = GridBagConstraints.CENTER;
 		gb.setConstraints(counsellorQuestion, c);
 		counsellorPanel.add(counsellorQuestion);
+		
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.insets = new Insets(0, 0, 0, 0);
+		c.anchor = GridBagConstraints.WEST;
+		gb.setConstraints(superviseCheckLabel, c);
+		counsellorPanel.add(superviseCheckLabel);
+		gb.setConstraints(insIDsupervise, c);
+		counsellorPanel.add(insIDsupervise);
+		gb.setConstraints(superviseCheckButton, c);
+		counsellorPanel.add(superviseCheckButton);
+		
+		gb.setConstraints(camperCabinLabel, c);
+		counsellorPanel.add(camperCabinLabel);
+		gb.setConstraints(cabinCamperID, c);
+		counsellorPanel.add(cabinCamperID);
+		gb.setConstraints(camperCabinButton, c);
+		counsellorPanel.add(camperCabinButton);
+		
+		gb.setConstraints(backToUser2, c);
+		counsellorPanel.add(backToUser2);
+		// return to user select button functionality
+		backToUser2.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cl.show(pages, "users");
+			}});
+		
 		
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(10, 10, 5, 0);
@@ -264,16 +416,7 @@ public class Base implements ActionListener
             public void actionPerformed(ActionEvent e) {
                 cl.show(pages, "register");
             }});
-		
-	
-		gb.setConstraints(backToUser2, c);
-		counsellorPanel.add(backToUser2);
-		// return to user select button functionality
-		backToUser2.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				cl.show(pages, "users");
-			}});
+
 		
 		gb.setConstraints(backToUser3, c);
 		camperPanel.add(backToUser3);
@@ -284,7 +427,7 @@ public class Base implements ActionListener
 				cl.show(pages, "users");
 			}});
 		
-		//register page
+//register page
 		gb.setConstraints(registerNameLabel, c);
 		registerPage.add(registerNameLabel);
 		gb.setConstraints(registerName, c);
@@ -316,12 +459,17 @@ public class Base implements ActionListener
 				cl.show(pages, "camper");
 			}});
 		
-		//camper query page
+//camper query page
+
 		gb.setConstraints(camperQuestion, c);
 		camperQuery.add(camperQuestion);
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(0, 0, 0, 0);
 		c.anchor = GridBagConstraints.WEST;
+		
+		gb.setConstraints(completePaymentButton, c);
+		camperQuery.add(completePaymentButton);
+		
 		gb.setConstraints(searchActivitybyCamp, c);
 		camperQuery.add(searchActivitybyCamp);
 		c.gridwidth = GridBagConstraints.RELATIVE;
@@ -354,8 +502,6 @@ public class Base implements ActionListener
 			gb.setConstraints(box, c);
 			camperQuery.add(box);
 		}
-		
-		
 		//gb.setConstraints(findCampbyActivityTxt, c);
 		//camperQuery.add(findCampbyActivityTxt);
 		c.gridwidth = GridBagConstraints.REMAINDER;
@@ -363,7 +509,20 @@ public class Base implements ActionListener
 		c.anchor = GridBagConstraints.WEST;
 		gb.setConstraints(campbyActivityButton, c);
 		camperQuery.add(campbyActivityButton);
+		gb.setConstraints(changeSessionButton, c);
+		camperQuery.add(changeSessionButton);
+		gb.setConstraints(cancelRegButton, c);
+		camperQuery.add(cancelRegButton);
 		
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		gb.setConstraints(backToCamperSelect2, c);
+		camperQuery.add(backToCamperSelect2);
+		backToCamperSelect2.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cl.show(pages, "camper");
+			}});
+
 
 		
 		menuPane.add(pages);
@@ -435,7 +594,9 @@ public class Base implements ActionListener
 		Dimension d = mainFrame.getToolkit().getScreenSize();
 		Rectangle r = mainFrame.getBounds();
 		mainFrame.setLocation( (d.width - r.width)/2, (d.height - r.height)/2 );
-		menuFrame.setLocation( (d.width - r.width)/2, (d.height - r.height)/2 );
+		Dimension d2 = menuFrame.getToolkit().getScreenSize();
+		Rectangle r2 = menuFrame.getBounds();
+		menuFrame.setLocation( (d2.width - r2.width)/2, (d2.height - r2.height)/2 );
 
 		// make the window visible
 		mainFrame.setVisible(true);
