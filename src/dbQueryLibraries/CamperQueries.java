@@ -1,18 +1,19 @@
 package dbQueryLibraries;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import application.Camper;
 import application.Registration;
 import application.Session;
 
 public class CamperQueries {
 
+	// Constructor
+	public CamperQueries(){}
+	
 	// 6.1 - Add Camper and Complete Registration
 	public int addCamper(Connection con, String name, String address, String phone, String email) throws SQLException
 	{
