@@ -1,19 +1,31 @@
 package application;
 
 public class Session {
+
+	String name;
+	// A string indicating start and end date for the session
+	String description;
 	
-	String startDate;
-	String endDate;
-	int sessionID;
-	
-	public Session(String start, String end, int id){
-		this.startDate = start;
-		this.endDate = end;
-		this.sessionID = id;
+	public Session(String name, String description){
+		this.name = name;
+		this.description = description;
 	}
 	
-	public int getSessionID(){
-		return this.sessionID;
+	public String getSessionName(){
+		return this.name;
+	}
+	
+	public String getDescription(){
+		return this.description;
+	}
+	
+	public String sessionToString(){
+		StringBuilder s = new StringBuilder("Week: " + this.name + " - " + this.description);
+		s.append("Week " + this.name);
+		s.append(" " + this.description);
+		String stringSession = s.toString();
+		
+		return stringSession;
 	}
 
 }
