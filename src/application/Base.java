@@ -9,6 +9,11 @@ import java.io.*;
 // for the login window
 import javax.swing.*;
 
+import com.apple.laf.resources.aqua;
+
+import dbQueryLibraries.AdminQueries;
+import dbQueryLibraries.CamperQueries;
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -641,6 +646,29 @@ public class Base implements ActionListener
 			con = DriverManager.getConnection(connectURL,username,password);
 
 			System.out.println("\nConnected to Oracle!");
+			
+			// QUERY TESTING
+			AdminQueries adminq = new AdminQueries();
+			CamperQueries camperq = new CamperQueries();
+			adminq.checkRegPayments(con, "Sculptural Pursuit");
+			camperq.cancelRegistration(con, 104);
+			
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Registration");
+			PreparedStatement ps = con.prepareStatement("SELECT * FROM Registration");
+			ResultSet rs2 = ps.executeQuery();
+			
+			while(rs.next()){
+				System.out.println(rs.getString(3));
+			}
+			
+			while (rs2.next()){
+				System.out.println("prepared works");
+			}
+			
+			stmt.close();
+			ps.close();
+			
 			return true;
 		}
 		catch (SQLException ex)
@@ -1012,5 +1040,7 @@ public class Base implements ActionListener
 	public static void main(String args[])
 	{
 		Base b = new Base();
+		
+		
 	}
 }

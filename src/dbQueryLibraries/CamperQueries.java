@@ -1,6 +1,7 @@
 package dbQueryLibraries;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -162,9 +163,13 @@ public class CamperQueries {
 	
 	// Deletes registration - no cascade
 	public void cancelRegistration(Connection con, int confNo) throws SQLException{
-		Statement stmt = con.createStatement();
-		stmt.executeUpdate("DELETE FROM Registration"
-				+ "WHERE conf_num = " + confNo);
+		PreparedStatement stmt = con.prepareStatement("DELETE FROM Registration WHERE conf_num = ?");
+		stmt.setInt(1, confNo);
+		//System.out.println(query);
+		int rc = stmt.executeUpdate();
+		
+		System.out.println("Registration: " + confNo + " cancelled, rows updated: " + rc);
+		stmt.close();
 	}
 	
 	// takes a confirmation number and a new session Name and changes the session
