@@ -20,9 +20,7 @@ public class Session {
 	}
 	
 	public String sessionToString(){
-		StringBuilder s = new StringBuilder("Week: " + this.name + " - " + this.description);
-		s.append("Week " + this.name);
-		s.append(" " + this.description);
+		StringBuilder s = new StringBuilder(this.name + ": " + this.description);
 		String stringSession = s.toString();
 		
 		return stringSession;
