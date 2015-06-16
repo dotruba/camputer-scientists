@@ -61,8 +61,8 @@ create table Cabin(
 create table Counsellor(
 	id number(9,0) primary key,
 	name varchar2(50),
-	camp_name varchar2(50) not null,
-	cabin_id number(9,0) not null,
+	camp_name varchar2(50),
+	cabin_id number(9,0),
 	foreign key (camp_name) references Camp(name),
 	foreign key (cabin_id) references Cabin(id)
 );
@@ -78,8 +78,8 @@ create table Registration(
 	sid number(9,0) not null,
 	camp_name varchar2(50) not null,
 	camper_id number(9,0) not null,
-	cabin_id number(9,0) not null,
-	counsellor_id number (9,0) not null,
+	cabin_id number(9,0),
+	counsellor_id number (9,0),
 	is_paid char check (is_paid in (0,1)),
 	foreign key (sid) references CampSession(id),
 	foreign key (camp_name) references Camp(name),
@@ -161,6 +161,7 @@ insert into Counsellor values(55553, 'William Shatner', 'Rescue 911 Emergency Ca
 insert into Counsellor values(55554, 'Michelangelo Splint', 'Sculptural Pursuit', 400);
 insert into Counsellor values(55555, 'Steve Nash', 'Beachside Fitness', 300);
 insert into Counsellor values(55556, 'Amadeus Mozart', 'Orchestral 101', 600);
+insert into Counsellor values(55557, 'Lazy Bob', NULL, NULL);
 
 insert into CampOffers values('Rescue 911 Emergency Camp', 'CPR Rescue Breathing');
 insert into CampOffers values('Rescue 911 Emergency Camp', 'Bandaging and Splinting');
@@ -172,6 +173,7 @@ insert into CampOffers values('Sculptural Pursuit', 'Junk Sculpting');
 
 insert into Registration values(registration_counter.nextval, 4, 'Rescue 911 Emergency Camp', 101, 400, 55553, 1);
 insert into Registration values(registration_counter.nextval, 1, 'Beachside Fitness', 102, 300, 55555, 0);
+insert into Registration values(registration_counter.nextval, 2, 'Beachside Fitness', 102, NULL, NULL, 0);
 insert into Registration values(registration_counter.nextval, 3, 'Homerun Baseball Camp', 103, 100, 55551, 1);
 insert into Registration values(registration_counter.nextval, 3, 'Homerun Baseball Camp', 104, 200, 55552, 1);
 insert into Registration values(registration_counter.nextval, 4, 'Rescue 911 Emergency Camp', 105, 400, 55553, 0);
