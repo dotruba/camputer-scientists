@@ -11,6 +11,7 @@ import javax.swing.*;
 
 import dbQueryLibraries.AdminQueries;
 import dbQueryLibraries.CamperQueries;
+import dbQueryLibraries.CouncellorQueries;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -386,7 +387,30 @@ public class Base implements ActionListener
 		counsellorPanel.add(insIDsuperviseTxt);
 		gb.setConstraints(superviseCheckButton, c);
 		counsellorPanel.add(superviseCheckButton);
-		//TODO: 6.16 check campers to supervise
+
+		// 6.16 check campers to supervise
+		superviseCheckButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CouncellorQueries councellorQuery = new CouncellorQueries();
+				Integer counsellorID = Integer.parseInt(insIDsuperviseTxt.getText());
+				try {
+					ArrayList<String> campers = councellorQuery.checkCamperSupervision(con, counsellorID);
+					StringBuilder formattedOutput = new StringBuilder();
+					for(String camper : campers) {
+						formattedOutput.append(camper + "\n");
+					}
+					String output = formattedOutput.toString();
+					if(output.isEmpty()) {
+						output = "No campers supervised by this counsellor";
+					}
+					Popup.infoBox(output, "Counsellor " + counsellorID);
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					System.out.println(e1);
+				}
+			}
+		});
 		
 		gb.setConstraints(camperCabinLabel, c);
 		counsellorPanel.add(camperCabinLabel);
