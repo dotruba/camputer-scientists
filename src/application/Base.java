@@ -9,6 +9,9 @@ import java.io.*;
 // for the login window
 import javax.swing.*;
 
+import dbQueryLibraries.AdminQueries;
+import dbQueryLibraries.CamperQueries;
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -24,9 +27,9 @@ public class Base implements ActionListener
 	// Arraylist of checkboxes
 	private ArrayList<JCheckBox> boxList = new ArrayList<JCheckBox>();
 	// list of sessions
-	private ArrayList<String> session = new ArrayList<String>();
+	private ArrayList<Session> session = new ArrayList<Session>();
 	//drop down menu
-	private JComboBox selectSession = new JComboBox();
+	private JComboBox<String> selectSession = new JComboBox<String>();
 	// command line reader 
 	private BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 	private Connection con;
@@ -57,7 +60,7 @@ public class Base implements ActionListener
 	private JLabel registerPayLabel = new JLabel("Enter payment: ");
 	private JLabel cabinSupervisorLabel = new JLabel("Assign counsellor to supervise a cabin: ");
 	private JLabel cabinLabel = new JLabel("Cabin ID: ");
-	private JLabel counsellorLabel = new JLabel("Counsellor: ");
+	private JLabel counsellorLabel = new JLabel("Counsellor ID: ");
 	private JLabel setWorkAtLabel = new JLabel("Assign counsellor to work at the camp: ");
 	private JLabel instructorWorkAtLabel = new JLabel("Counsellor ID:  ");
 	private JLabel campNameLabel = new JLabel("Camp Name: ");
@@ -139,15 +142,9 @@ public class Base implements ActionListener
 	/*
 	 * constructs menu and loads JDBC driver
 	 */ 
-	public Base()
+	public Base() throws SQLException
 	{
-//initializing session drop down menu
-		session.add("week1");
-		session.add("week2");
-		session.add("week3");
-		for(int i=0; i<session.size();i++){
-			selectSession.addItem(session.get(i));
-		}
+
 //populating dummy activity list
 		activityList = new ArrayList<String>();
 		activityList.add("swim");
@@ -281,7 +278,21 @@ public class Base implements ActionListener
 		c.insets = new Insets(0, 0, 0, 0);
 		gb.setConstraints(cabinSupervisorButton, c);
 		adminPanel.add(cabinSupervisorButton);
-		//TODO :6.9 assign cabin supervisor.  
+		//TODO :6.9 assign cabin supervisor. 
+		cabinSupervisorButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AdminQueries adminQuery = new AdminQueries();
+				Integer cabin = Integer.parseInt(cabinIDtxt.getText());
+				Integer counsellor = Integer.parseInt(counsellorTxt.getText());
+					try {
+						adminQuery.assignCabinSupervisor(con, cabin, counsellor);
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+						System.out.println(e1);
+					}
+		
+			}});
 		
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.anchor = GridBagConstraints.WEST;
@@ -328,6 +339,13 @@ public class Base implements ActionListener
 		adminPanel.add(checkPayTxt);
 		gb.setConstraints(checkPayButton, c);
 		adminPanel.add(checkPayButton);
+		checkPayButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ArrayList<String> output;
+                AdminQueries adminQuery = new AdminQueries();
+                
+            }});
 		//TODO: 6.13 check payment
 		
 		gb.setConstraints(multicampLabel, c);
@@ -654,6 +672,17 @@ public class Base implements ActionListener
 			// remove the login window and display a text menu 
 			mainFrame.dispose();
 			menuFrame.setVisible(true);
+			//initializing session drop down menu
+			CamperQueries camperQueries = new CamperQueries();
+			try {
+				session = camperQueries.getAllSessions(con);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+				System.out.println(e1);
+			}
+			for(Session s : session){
+				selectSession.addItem((s.sessionToString()));
+			}
 			// showMenu();     
 		}
 		else
@@ -673,7 +702,7 @@ public class Base implements ActionListener
 		}             
 	}
 
-	public static void main(String args[])
+	public static void main(String args[]) throws SQLException
 	{
 		Base b = new Base();
 	}

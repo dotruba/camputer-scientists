@@ -3,10 +3,12 @@ package dbQueryLibraries;
 import java.sql.*;
 import java.util.*;
 
+import application.Popup;
+
 public class AdminQueries {
 	
 	//6.9
-	public void assignCabinSupervisor(Connection con, int cabinID, String counsellor) throws SQLException
+	public void assignCabinSupervisor(Connection con, int cabinID, int counsellor) throws SQLException
 	{
 		PreparedStatement ps = con.prepareStatement(
 			"SELECT fid " +
@@ -15,27 +17,29 @@ public class AdminQueries {
 				"AND fid IN (SELECT ca.fid " +
 							"FROM Camp ca, Counsellor co " +
 							"WHERE co.camp_name = ca.name " +
-								"AND co.name = ?");
+								"AND co.id = ?)");
 		ps.setInt(1, cabinID);
-		ps.setString(2, counsellor);
+		ps.setInt(2, counsellor);
 		
 		ResultSet rs = ps.executeQuery();
 		ps.clearBatch();
 		ps.clearParameters();
 		
-		if (!rs.isBeforeFirst() ) {    
-			 System.out.println("Error - Counsellor not at cabin's facility");
+		if (!rs.isBeforeFirst() ) {   
+			Popup.infoBox("Counsellor not at cabin's facility", "Error");
+			System.out.println("Error - Counsellor not at cabin's facility");
 		} 
 		else {
 			ps = con.prepareStatement(
 				"UPDATE Counsellor " + 
 				"SET cabin_id = ? " +
-				"WHERE name = ?");
+				"WHERE id = ?");
 			ps.setInt(1, cabinID);
-			ps.setString(2, counsellor);
+			ps.setInt(2, counsellor);
 			int rowCount = ps.executeUpdate();
 			
 			System.out.println("Completed, " + rowCount + "lines updated.");
+			Popup.infoBox(rowCount + "Lines updated", "Completed");
 		}
 		
 		ps.close();
@@ -158,6 +162,7 @@ public class AdminQueries {
 		ArrayList<String> output = new ArrayList<String>();
 		
 		if (!rs.isBeforeFirst() ) {    
+			Popup.infoBox("All paid","Every camper has completed the payment.");
 			System.out.println("All paid.");
 		} 
 		else {
