@@ -61,8 +61,8 @@ create table Cabin(
 create table Counsellor(
 	id number(9,0) primary key,
 	name varchar2(50),
-	camp_name varchar2(50) not null,
-	cabin_id number(9,0) not null,
+	camp_name varchar2(50),
+	cabin_id number(9,0),
 	foreign key (camp_name) references Camp(name),
 	foreign key (cabin_id) references Cabin(id)
 );
@@ -161,6 +161,7 @@ insert into Counsellor values(55553, 'William Shatner', 'Rescue 911 Emergency Ca
 insert into Counsellor values(55554, 'Michelangelo Splint', 'Sculptural Pursuit', 400);
 insert into Counsellor values(55555, 'Steve Nash', 'Beachside Fitness', 300);
 insert into Counsellor values(55556, 'Amadeus Mozart', 'Orchestral 101', 600);
+insert into Counsellor values(55557, 'Lazy Bob', NULL, NULL);
 
 insert into CampOffers values('Rescue 911 Emergency Camp', 'CPR Rescue Breathing');
 insert into CampOffers values('Rescue 911 Emergency Camp', 'Bandaging and Splinting');
