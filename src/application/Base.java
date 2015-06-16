@@ -3,6 +3,8 @@ package application;
 // We need to import the java.sql package to use JDBC
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 // for reading from the command line
 import java.io.*;
 
@@ -29,7 +31,7 @@ public class Base implements ActionListener
 	// list of sessions
 	private ArrayList<Session> session = new ArrayList<Session>();
 	//drop down menu
-	private JComboBox<String> selectSession = new JComboBox<String>();
+	private JComboBox selectSession = new JComboBox();
 	// command line reader 
 	private BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 	private Connection con;
@@ -64,7 +66,7 @@ public class Base implements ActionListener
 	private JLabel setWorkAtLabel = new JLabel("Assign counsellor to work at the camp: ");
 	private JLabel instructorWorkAtLabel = new JLabel("Counsellor ID:  ");
 	private JLabel campNameLabel = new JLabel("Camp Name: ");
-	private JLabel multicampLabel = new JLabel("Enter campers and find those who registered for more than 1 camp: ");
+	private JLabel multicampLabel = new JLabel("Enter campers and camps to find those registered in more than 1 of the given camps: ");
 	private JLabel assignRegLabel = new JLabel("Assign registration to a counsellor: ");
 	private JLabel regLabel = new JLabel("Confirmation#: ");
 	private JLabel insRegLabel = new JLabel("Counsellor ID: ");
@@ -78,6 +80,9 @@ public class Base implements ActionListener
 	private JLabel registeredForLabel = new JLabel("Find campers registered in this camp during this session: ");
 	private JLabel registeredForCampLabel = new JLabel("Camp: ");
 	private JLabel registeredForSessionLabel = new JLabel("Session: ");
+	private JLabel deleteCamperLabel = new JLabel("Delete this camper: ");
+	private JLabel multiCampsLabel = new JLabel("Camps: ");
+	private JLabel multiCamperLabel = new JLabel("Campers: ");
 
 // textfields
 	private JTextField registerPhoneTxt = new JTextField(10);
@@ -98,6 +103,8 @@ public class Base implements ActionListener
 	private JTextField offerActivityTxt = new JTextField(10);
 	private JTextField registeredForCampTxt = new JTextField(10);
 	private JTextField registeredForSessionTxt = new JTextField(10);
+	private JTextField deleteCamperTxt = new JTextField(10);
+	private JTextField multiCamperTxt = new JTextField(10);
 	
 //Buttons
 	JButton backToUser = new JButton("Return to user selection.");
@@ -127,6 +134,7 @@ public class Base implements ActionListener
 	JButton offerButton = new JButton("Offer");
 	JButton checkRegButton = new JButton("Check");
 	JButton multiSessionButton = new JButton("Find campers registered in more than 1 session");
+	JButton deleteCamperButton = new JButton("Delete");
 	
 //Creating activity check boxes
 	private void createCheckBox() {
@@ -278,7 +286,7 @@ public class Base implements ActionListener
 		c.insets = new Insets(0, 0, 0, 0);
 		gb.setConstraints(cabinSupervisorButton, c);
 		adminPanel.add(cabinSupervisorButton);
-		//TODO :6.9 assign cabin supervisor. 
+		//6.9
 		cabinSupervisorButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -309,7 +317,23 @@ public class Base implements ActionListener
 		adminPanel.add(campNameTxt);
 		gb.setConstraints(workAtButton, c);
 		adminPanel.add(workAtButton);
-		//TODO: 6.10 set works at
+		//6.10 set works at
+		workAtButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	int insID;
+            	String campName;
+            	insID = Integer.parseInt(insIDTxt.getText());
+            	campName = campNameTxt.getText();
+                AdminQueries adminQuery = new AdminQueries();
+                try {
+					adminQuery.setWorksAt(con, insID, campName);
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					System.out.println(e1);
+				}
+                
+            }});
 		
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.anchor = GridBagConstraints.WEST;
@@ -327,8 +351,44 @@ public class Base implements ActionListener
 		gb.setConstraints(assignRegButton, c);
 		adminPanel.add(assignRegButton);
 		//TODO: 6.11 assign registration to counsellor
+		assignRegButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	int insID;
+            	int confirmation;
+            	insID = Integer.parseInt(insRegTxt.getText());
+            	confirmation = Integer.parseInt(regNumTxt.getText());
+                AdminQueries adminQuery = new AdminQueries();
+                try {
+					adminQuery.assignRegToCounsellor(con, insID, confirmation);
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					System.out.println(e1);
+				}
+                
+            }});
 		
-		//TODO: new 6.12 Delete camper
+		gb.setConstraints(deleteCamperLabel, c);
+		adminPanel.add(deleteCamperLabel);
+		gb.setConstraints(deleteCamperTxt, c);
+		adminPanel.add(deleteCamperTxt);
+		gb.setConstraints(deleteCamperButton, c);
+		adminPanel.add(deleteCamperButton);
+		// new 6.12 Delete camper
+		deleteCamperButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	int camperID;
+            	camperID = Integer.parseInt(deleteCamperTxt.getText());
+                AdminQueries adminQuery = new AdminQueries();
+                try {
+					adminQuery.deleteCamper(con, camperID);
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					System.out.println(e1);
+				}
+            }});
+		
 		
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.anchor = GridBagConstraints.WEST;
@@ -339,26 +399,77 @@ public class Base implements ActionListener
 		adminPanel.add(checkPayTxt);
 		gb.setConstraints(checkPayButton, c);
 		adminPanel.add(checkPayButton);
+		//6.13 check payment
 		checkPayButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 ArrayList<String> output;
                 AdminQueries adminQuery = new AdminQueries();
+                String campName = checkPayTxt.getText();
+				try {
+					adminQuery.checkRegPayments(con,campName);
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					System.out.println(e1);
+				}
                 
             }});
-		//TODO: 6.13 check payment
+		
 		
 		gb.setConstraints(multicampLabel, c);
 		adminPanel.add(multicampLabel);
+		gb.setConstraints(multiCampsLabel, c);
+		adminPanel.add(multiCampsLabel);
 		gb.setConstraints(multicampTxt, c);
 		adminPanel.add(multicampTxt);
+		gb.setConstraints(multiCamperLabel, c);
+		adminPanel.add(multiCamperLabel);
+		gb.setConstraints(multiCamperTxt, c);
+		adminPanel.add(multiCamperTxt);
 		gb.setConstraints(multicampButton, c);
 		adminPanel.add(multicampButton);
 		//TODO: 6.14 multiple camps
+		multicampButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AdminQueries adminQuery = new AdminQueries();
+                String camperIDs = multiCamperTxt.getText();
+                List<String> cID = Arrays.asList(camperIDs.split("\\s*,\\s*"));;
+                ArrayList<Integer> camperIDList = new ArrayList<Integer>();
+                int id;
+                for(String s : cID){
+                	id = Integer.parseInt(s);
+                	camperIDList.add(id);
+                }
+                String campNames = multiCamperTxt.getText();
+                List<String> cNL = Arrays.asList(campNames.split("\\s*,\\s*"));;
+                ArrayList<String> campNameList = new ArrayList<String>(cNL);
+                
+				try {
+					adminQuery.multipleCamps(con, camperIDList, campNameList);
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					System.out.println(e1);
+				}
+                
+            }});
+		
 		
 		gb.setConstraints(worklessInstructorButton, c);
 		adminPanel.add(worklessInstructorButton);
-		//TODO: 6.15 check counsellor role
+		//6.15 check counsellor role
+		worklessInstructorButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AdminQueries adminQuery = new AdminQueries();
+				try {
+					adminQuery.checkCounsellor(con);
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					System.out.println(e1);
+				}
+                
+            }});
 		
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(10, 10, 5, 0);
@@ -650,7 +761,7 @@ public class Base implements ActionListener
 
 		try 
 		{
-			con = DriverManager.getConnection(connectURL,"ora_m4c8","a40441115");
+			con = DriverManager.getConnection(connectURL,"ora_k2r7","a25920109");
 
 			System.out.println("\nConnected to Oracle!");
 			return true;
