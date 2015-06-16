@@ -643,7 +643,7 @@ public class Base implements ActionListener
 
 		try 
 		{
-			con = DriverManager.getConnection(connectURL,username,password);
+			con = DriverManager.getConnection(connectURL,"ora_m4c8","a40441115");
 
 			System.out.println("\nConnected to Oracle!");
 			
