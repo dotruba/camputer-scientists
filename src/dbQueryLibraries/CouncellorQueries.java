@@ -41,6 +41,8 @@ public class CouncellorQueries {
 		ps.setString(3, supplies);
 		ps.executeUpdate();
 		
+		ps.close();
+		
 	}
 	
 	// Add an entry to "campOffers" to indicate that a camp is now offering a certain activity
@@ -52,6 +54,7 @@ public class CouncellorQueries {
 		ps.setString(1, campName);
 		ps.setString(2, activityName);
 		ps.executeUpdate();
+		ps.close();
 	}
 	
 	// given a camp and session, return a list of all campers registered 
@@ -68,6 +71,7 @@ public class CouncellorQueries {
 		while(rs.next()){
 			campers.add(rs.getString(1) + " - " + rs.getString(2));
 		}
+		ps.close();
 		return campers;	
-		}
+	}
 }

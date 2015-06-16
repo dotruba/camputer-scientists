@@ -34,6 +34,7 @@ public class CamperQueries {
 		int camperID = rs.getInt("camper_id");		
 		System.out.println("Camper added, rows updated:" + rowCount);
 		
+		stmt.close();
 		return camperID;
 	}
 	
@@ -56,6 +57,8 @@ public class CamperQueries {
 		int confNo= rs.getInt("camper_id");	
 		System.out.println("Registration Completed, rows updated: " + rowCount);
 		
+		
+		stmt.close();
 		return confNo;
 	}
 	
@@ -70,6 +73,7 @@ public class CamperQueries {
 			sessions.add(s);
 		}
 		
+		stmt.close();
 		return sessions;
 	}
 
@@ -81,6 +85,7 @@ public class CamperQueries {
 				+ "WHERE conf_no = " + confNo);
 		
 		System.out.println("Payment made, rows updated: " + rowCount);
+		stmt.close();
 	}
 	
 	public ArrayList<String> findCampActivities(Connection con, String campName) throws SQLException{
@@ -95,6 +100,7 @@ public class CamperQueries {
 		}
 		
 		System.out.println("Num of activities offered: " + activities.size());
+		stmt.close();
 		return activities;
 	}
 	
@@ -109,6 +115,7 @@ public class CamperQueries {
 			activities.add(rs.getString("activity_name"));
 		}
 		
+		stmt.close();
 		return activities;
 	}
 	
@@ -141,6 +148,8 @@ public class CamperQueries {
 		}
 		
 		System.out.println("Number of camps offering all selected activities: " + camps.size());
+		
+		stmt.close();
 		return camps;
 	}
 	
@@ -158,6 +167,8 @@ public class CamperQueries {
 		//reg.setIsPaid(rs.getInt("is_paid"));
 		reg.setSessionID(rs.getInt("sid"));
 		
+		stmt.close();
+		
 		return reg;
 	}
 	
@@ -169,6 +180,7 @@ public class CamperQueries {
 		int rc = stmt.executeUpdate();
 		
 		System.out.println("Registration: " + confNo + " cancelled, rows updated: " + rc);
+
 		stmt.close();
 	}
 	
@@ -178,6 +190,8 @@ public class CamperQueries {
 		stmt.executeUpdate("UPDATE Registration"
 				+ "SET session_name = " + sessionName
 				+ "WHERE conf_num = " + confNo);
+		
+		stmt.close();
 	}
 	
 	
