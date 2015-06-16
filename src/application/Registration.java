@@ -22,6 +22,30 @@ public class Registration {
 		this.confNo = confNo;
 	}
 	
+	public boolean isPaid() {
+		return isPaid;
+	}
+
+	public void setPaid(boolean isPaid) {
+		this.isPaid = isPaid;
+	}
+
+	public int getConfNo() {
+		return confNo;
+	}
+
+	public int getSessionID() {
+		return sessionID;
+	}
+
+	public int getCamperID() {
+		return camperID;
+	}
+
+	public String getCampName() {
+		return campName;
+	}
+
 	public void setCamperID(int camperID){
 		this.camperID = camperID;
 	}
@@ -34,8 +58,12 @@ public class Registration {
 		this.campName = campName;
 	}
 	
-	public void setIsPaid(boolean isPaid){
-		this.isPaid = isPaid;
+	public String toString() {
+		return "confNo: " + this.confNo
+				+ "\nsessionId: " + this.sessionID
+				+ "\ncamperId: " + this.camperID
+				+ "\ncampName: " + this.campName
+				+ "\nisPaid: " + this.isPaid;
 	}
 	
 }
