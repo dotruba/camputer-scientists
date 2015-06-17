@@ -33,6 +33,7 @@ public class Base implements ActionListener
 	private ArrayList<Session> session = new ArrayList<Session>();
 	//drop down menu
 	private JComboBox selectSession = new JComboBox();
+	private JComboBox paySelect = new JComboBox();
 	// command line reader 
 	private BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 	private Connection con;
@@ -60,7 +61,7 @@ public class Base implements ActionListener
 	private JLabel registerNameLabel = new JLabel("Name: ");
 	private JLabel registerPhoneLabel = new JLabel("Phone: ");
 	private JLabel registerSessionLabel = new JLabel("Select a session: ");
-	private JLabel registerPayLabel = new JLabel("Enter payment: ");
+	private JLabel registerPayLabel = new JLabel("Pay now?");
 	private JLabel cabinSupervisorLabel = new JLabel("Assign counsellor to supervise a cabin: ");
 	private JLabel cabinLabel = new JLabel("Cabin ID: ");
 	private JLabel counsellorLabel = new JLabel("Counsellor ID: ");
@@ -84,6 +85,12 @@ public class Base implements ActionListener
 	private JLabel deleteCamperLabel = new JLabel("Delete this camper: ");
 	private JLabel multiCampsLabel = new JLabel("Camps: ");
 	private JLabel multiCamperLabel = new JLabel("Campers: ");
+	private JLabel addressLabel = new JLabel("Address: ");
+	private JLabel phoneLabel = new JLabel("Phone: ");
+	private JLabel emailLabel = new JLabel("Email: ");
+	private JLabel campeNameLabel = new JLabel("Enter the camp to register: ");
+	private JLabel confNoLabel = new JLabel("Enter your confirmation#: ");
+	private JLabel payLabel = new JLabel("Complete registration payment: ");
 
 // textfields
 	private JTextField registerPhoneTxt = new JTextField(10);
@@ -106,6 +113,11 @@ public class Base implements ActionListener
 	private JTextField registeredForSessionTxt = new JTextField(10);
 	private JTextField deleteCamperTxt = new JTextField(10);
 	private JTextField multiCamperTxt = new JTextField(10);
+	private JTextField addressTxt = new JTextField(10);
+	private JTextField phoneTxt = new JTextField(10);
+	private JTextField emailTxt = new JTextField(10);
+	private JTextField campeNameTxt = new JTextField(10);
+	private JTextField payConfNoTxt = new JTextField(10);
 	
 //Buttons
 	JButton backToUser = new JButton("Return to user selection.");
@@ -345,7 +357,7 @@ public class Base implements ActionListener
 		adminPanel.add(insRegTxt);
 		gb.setConstraints(assignRegButton, c);
 		adminPanel.add(assignRegButton);
-		//TODO: 6.11 assign registration to counsellor
+		//TODO: 6.11 (still need to do testing)
 		assignRegButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -423,7 +435,7 @@ public class Base implements ActionListener
 		adminPanel.add(multiCamperTxt);
 		gb.setConstraints(multicampButton, c);
 		adminPanel.add(multicampButton);
-		//TODO: 6.14 multiple camps
+		//TODO: 6.14 (still need to do testing)
 		multicampButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -604,6 +616,19 @@ public class Base implements ActionListener
 		registerPage.add(registerNameLabel);
 		gb.setConstraints(registerNameTxt, c);
 		registerPage.add(registerNameTxt);
+		gb.setConstraints(addressLabel, c);
+		registerPage.add(addressLabel);
+		gb.setConstraints(addressTxt, c);
+		registerPage.add(addressTxt);
+		gb.setConstraints(phoneLabel, c);
+		registerPage.add(phoneLabel);
+		gb.setConstraints(phoneTxt, c);
+		registerPage.add(phoneTxt);
+		gb.setConstraints(emailLabel, c);
+		registerPage.add(emailLabel);
+		gb.setConstraints(emailTxt, c);
+		registerPage.add(emailTxt);
+		
 		gb.setConstraints(registerPhoneLabel, c);
 		registerPage.add(registerPhoneLabel);
 		gb.setConstraints(registerPhoneTxt, c);
@@ -612,13 +637,42 @@ public class Base implements ActionListener
 		registerPage.add(registerSessionLabel);
 		gb.setConstraints(selectSession, c);
 		registerPage.add(selectSession);
+		gb.setConstraints(campeNameLabel, c);
+		registerPage.add(campeNameLabel);
+		gb.setConstraints(campeNameTxt, c);
+		registerPage.add(campeNameTxt);
 		gb.setConstraints(registerPayLabel, c);
 		registerPage.add(registerPayLabel);
-		gb.setConstraints(registerPayTxt, c);
-		registerPage.add(registerPayTxt);
+		gb.setConstraints(paySelect, c);
+		registerPage.add(paySelect);
 		gb.setConstraints(registerNowButton, c);
 		registerPage.add(registerNowButton);
-		//TODO: 6.1 registration
+		//TODO: 6.1 registration (Still need testing and checking payment)
+		registerNowButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CamperQueries camperQuery = new CamperQueries();
+				String pay = (String) paySelect.getSelectedItem();
+				String name = registerNameTxt.getText();
+				String address = registerPhoneTxt.getText();
+				String phone = phoneTxt.getText();
+				String email = emailTxt.getText();
+				String sessionName = (String) selectSession.getSelectedItem();
+				String campName = campeNameTxt.getText();
+				int confNo;
+				int id;
+				try {
+					id = camperQuery.addCamper(con, name, address, phone, email);
+					confNo = camperQuery.completeRegistration(con, id, sessionName, campName);
+					
+					if((String)paySelect.getSelectedItem()=="yes"){
+						camperQuery.makePayment(con, confNo);
+					}
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					System.out.println(e1);
+				}
+			}});
 		
 		gb.setConstraints(backToCamperSelect, c);
 		registerPage.add(backToCamperSelect);
@@ -634,9 +688,26 @@ public class Base implements ActionListener
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(0, 0, 0, 0);
 		c.anchor = GridBagConstraints.WEST;
+		gb.setConstraints(payLabel, c);
+		camperQuery.add(payLabel);
+		gb.setConstraints(confNoLabel, c);
+		camperQuery.add(confNoLabel);
+		gb.setConstraints(payConfNoTxt, c);
+		camperQuery.add(payConfNoTxt);
 		gb.setConstraints(completePaymentButton, c);
 		camperQuery.add(completePaymentButton);
-		//TODO: 6.2 Make Payment
+		//TODO: 6.2 Make Payment (Still require testing)
+		completePaymentButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int confNo = Integer.parseInt(payConfNoTxt.getText());
+				CamperQueries camperQuery = new CamperQueries();
+				try {
+					camperQuery.makePayment(con, confNo);
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			}});
 		
 		gb.setConstraints(searchActivitybyCamp, c);
 		camperQuery.add(searchActivitybyCamp);
@@ -823,6 +894,11 @@ public class Base implements ActionListener
 			mainFrame.dispose();
 			menuFrame.setVisible(true);
 			//initializing session drop down menu
+			String yes = "Yes";
+			String no = "No";
+			paySelect.addItem(yes);
+			paySelect.addItem(no);
+			
 			CamperQueries camperQueries = new CamperQueries();
 			try {
 				session = camperQueries.getAllSessions(con);
