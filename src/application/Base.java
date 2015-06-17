@@ -742,7 +742,7 @@ public class Base
 					// register with already existing camperID
 					try {
 						id = camperQuery.getCamperID(con, email);
-						confNo = camperQuery.completeRegistration(con, id, sessionID + 1, campName);
+						confNo = camperQuery.completeRegistration(con, id, selectedSession.getId(), campName);
 						Popup.infoBox("Registration is complete. Your confirmation number is " + confNo, "Complete");
 						if((String)paySelect.getSelectedItem()=="yes"){
 							camperQuery.makePayment(con, confNo);
