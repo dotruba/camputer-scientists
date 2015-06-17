@@ -31,7 +31,7 @@ public class CouncellorQueries {
 	
 	// assign a student to a cabin --> find facility that is offered, and then assign to cabin
 	// with the fewest students in it. 
-	public void assignCamperToCabin(Connection con, int confNo) throws SQLException {
+	public int assignCamperToCabin(Connection con, int confNo) throws SQLException {
 		
 		String createTable = "CREATE VIEW cabinCount "
 				+ "AS SELECT fid, id AS cabin, count(camper_id) AS num_campers "
@@ -63,6 +63,7 @@ public class CouncellorQueries {
 		ps2.close();
 		ps.close();
 		System.out.println("Camper assigned to cabin. Rows updated: " + rc);
+		return rc;
 		
 	}
 	

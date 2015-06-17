@@ -79,7 +79,7 @@ public class Base implements ActionListener
 	private JLabel insRegLabel = new JLabel("Counsellor ID: ");
 	private JLabel checkRegLabel = new JLabel("Check registration payment: ");
 	private JLabel superviseCheckLabel = new JLabel("Enter your ID to check the campers under your supervision: ");
-	private JLabel camperCabinLabel = new JLabel("Enter camper's ID to assign him/her to cabin: "); 
+	private JLabel camperCabinLabel = new JLabel("Enter a Registration # to assign Camper to cabin: "); 
 	private JLabel checkPayLabel = new JLabel("Get phone# for campers who haven't paid from this camp: "); 
 	private JLabel offerActivityLabel = new JLabel("Offer a new activity: "); 
 	private JLabel offerCampLabel = new JLabel("Enter the camp where it will take place: ");
@@ -540,7 +540,26 @@ public class Base implements ActionListener
 		counsellorPanel.add(cabinCamperIDTxt);
 		gb.setConstraints(camperCabinButton, c);
 		counsellorPanel.add(camperCabinButton);
-		//TODO: 6.17 assign camper cabin (do we need a 2nd input box here?
+		// 6.17 assign camper cabin
+		camperCabinButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CouncellorQueries cq = new CouncellorQueries();
+				int confNo = Integer.parseInt(cabinCamperIDTxt.getText());
+				try {
+					int updated = cq.assignCamperToCabin(con, confNo);
+					if (updated == 1){
+						Popup.infoBox("Camper has been assigned to least full cabin.", "Complete");
+					} else {
+						Popup.infoBox("No registration for given id, please try again", "Incomplete");
+					}
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					System.out.println(e1);
+					Popup.infoBox("ERROR - please check your inputs", "ERROR");
+				}
+			}
+		});
 		
 		
 		gb.setConstraints(offerActivityLabel, c);
@@ -566,8 +585,7 @@ public class Base implements ActionListener
 					cq.offerActivity(con, campName, activityName);
 					Popup.infoBox(campName +  " now offers " + activityName, "Activity Added");
 				} catch (SQLException e1) {
-					// TODO MAYBE? 
-					// if the activity does not exist, direct them somewhere where the can create a new activit.
+					// POSSIBLE UPDATE: if the activity does not exist, direct them somewhere where the can create a new activit.
 
 					Popup.infoBox("That activity or camp does not exist. Please check your input.", "Error");
 				}
@@ -712,7 +730,8 @@ public class Base implements ActionListener
 		gb.setConstraints(registerNowButton, c);
 		registerPage.add(registerNowButton);
 
-		//TODO: 6.1 registration (Still need testing and checking payment)
+		// 6.1 registration
+		// TODO: two phone number input boxes. Figure out which one isn't doing anything and remove
 		registerNowButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -722,46 +741,43 @@ public class Base implements ActionListener
 				String address = registerPhoneTxt.getText();
 				String phone = phoneTxt.getText();
 				String email = emailTxt.getText();
-				int sessionName = (Integer) selectSession.getSelectedItem();
+				// TODO: fix so session is actually getting integer
+				// code below causing errors
+				// int sessionID = (Integer) selectSession.getSelectedItem();
+				int sessionID = 1;
 				String campName = campeNameTxt.getText();
 				int confNo;
 				int id;
 				try {
+					// try and add Camper to Camper Table, and then register.
 					id = camperQuery.addCamper(con, name, address, phone, email);
-					confNo = camperQuery.completeRegistration(con, id, sessionName, campName);
-					
+					confNo = camperQuery.completeRegistration(con, id, sessionID, campName);					
 					if((String)paySelect.getSelectedItem()=="yes"){
 						camperQuery.makePayment(con, confNo);
-
-		// Kaitlyn's possible version (probably don't need)
-/*		//TODO: 6.1 registration
-		registerNowButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            	CamperQueries cq = new CamperQueries();
-            	String camperName = registerNameTxt.getText();
-            	String phone = registerPhoneTxt.getText();
-            	//String campName = 
-            	//TODO - add fields for email, address and camp.
-            	//String email = emailAddressTxt.getTexT();
-            	//String address = registerAddressTxt.getText();
-            	
-            	int sessionID = selectSession.getSelectedIndex() + 1;
-            	
-                try {
-                	// add camper
-					int id = cq.addCamper(con, camperName, "123 Main St", phone, "test@email.com");
-					// register camper
-					try { 
-						cq.completeRegistration(con, id, sessionID, "Beachside Fitness");
-					} catch (SQLException e2) {
-						e2.printStackTrace();
-						System.out.println(e2);*/
-
 					}
+					Popup.infoBox("Registration is complete. Your confirmation number is " + confNo, "Complete");					
 				} catch (SQLException e1) {
-					e1.printStackTrace();
-					System.out.println(e1);
+					System.out.println("Error caught in first catch");
+					//e1.printStackTrace();
+					System.out.println(e1);	
+					// Try and see if the camper is already in the database
+					// register with already existing camperID
+					try {
+						id = camperQuery.getCamperID(con, email);
+						confNo = camperQuery.completeRegistration(con, id, sessionID + 1, campName);
+						Popup.infoBox("Registration is complete. Your confirmation number is " + confNo, "Complete");
+						if((String)paySelect.getSelectedItem()=="yes"){
+							camperQuery.makePayment(con, confNo);
+						}
+					// reaches this case if already registered in that session
+					// or if camp name does not exist.
+					} catch (SQLException e2){
+						Popup.infoBox("Registration not completed. Please ensure you are picking a unique session"
+								+ " and have entered a correct camp name.", "Error");
+						e2.printStackTrace();
+						System.out.println(e2);
+						System.out.println("Error caught in second catch");
+					}
 				}
 			}});
 
@@ -814,8 +830,8 @@ public class Base implements ActionListener
 		gb.setConstraints(activitybyCampButton, c);
 		camperQuery.add(activitybyCampButton);
 		
-		// TODO = activities by camp
-		// TODO suggestion - change camp name to a dropdown instead of a text field?
+		// Activities by camp
+		// POSSIBLE CHANGE: change camp name to a dropdown instead of a text field?
 		activitybyCampButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -989,8 +1005,8 @@ s to Oracle database named ug using user supplied username and password
 
 		try 
 		{
-			con = DriverManager.getConnection(connectURL,"ora_k2r7","a25920109");
-			//con = DriverManager.getConnection(connectURL, username, password);
+			//con = DriverManager.getConnection(connectURL,"ora_k2r7","a25920109");
+			con = DriverManager.getConnection(connectURL, "ora_v7x8", "a19320126");
 
 			System.out.println("\nConnected to Oracle!");
 			

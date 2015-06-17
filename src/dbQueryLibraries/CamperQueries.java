@@ -245,5 +245,17 @@ public class CamperQueries {
 		return camps;
 	}
 	
+	public int getCamperID(Connection con, String email) throws SQLException{
+		PreparedStatement ps = con.prepareStatement("SELECT id"
+				+ " FROM Camper c"
+				+ " WHERE c.email = ?");
+		ps.setString(1, email);
+		ResultSet rs = ps.executeQuery();
+		rs.next();
+		int id = rs.getInt("id");
+		
+		return id;
+	}
+	
 	
 }
