@@ -31,6 +31,7 @@ public class CouncellorQueries {
 	
 	// assign a student to a cabin --> find facility that is offered, and then assign to cabin
 	// with the fewest students in it. 
+	//TODO: Kaitlyn Fix this plz
 	public int assignCamperToCabin(Connection con, int confNo) throws SQLException {
 		
 		String createTable = "CREATE VIEW cabinCount "
@@ -57,12 +58,17 @@ public class CouncellorQueries {
 		ps2.setInt(2, confNo);
 		int rc = ps2.executeUpdate();
 		
+		ps2 = con.prepareStatement("SELECT cabin_id FROM Registration WHERE conf_num = " + confNo);
+		ResultSet rs = ps2.executeQuery();
+		rs.next();
+		int cabinID = rs.getInt(1);
+		
 		ps = con.prepareStatement("DROP VIEW cabinCount");
 		ps.executeUpdate();
 		
 		ps2.close();
 		ps.close();
-		System.out.println("Camper assigned to cabin. Rows updated: " + rc);
+		System.out.println("Camper assigned to cabin " + cabinID + ", Rows updated: " + rc);
 		return rc;
 		
 	}
@@ -86,8 +92,6 @@ public class CouncellorQueries {
 	// Add an entry to "campOffers" to indicate that a camp is now offering a certain activity
 	// TESTED
 	public void offerActivity(Connection con, String campName, String activityName) throws SQLException {
-		// TODO: Check to make sure it doesn't contain that activity already?
-		// Should be checked by key.
 		PreparedStatement ps = con.prepareStatement("INSERT INTO CampOffers "
 				+ "VALUES (?, ?)");
 		ps.setString(1, campName);
