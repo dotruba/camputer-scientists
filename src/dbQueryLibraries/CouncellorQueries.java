@@ -32,8 +32,8 @@ public class CouncellorQueries {
 	// assign a student to a cabin --> find facility that is offered, and then assign to cabin
 	// with the fewest students in it. 
 	public void assignCamperToCabin(Connection con, int confNo) throws SQLException {
-		PreparedStatement ps = con.prepareStatement(null);
-		//TODO
+		PreparedStatement ps = con.prepareStatement("UPDATE Registration ");
+		
 		
 	}
 	
