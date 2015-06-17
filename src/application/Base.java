@@ -32,7 +32,7 @@ public class Base implements ActionListener
 {
 	// list of activities
 	private ArrayList<String> activityList;
-	// Arraylist of checkboxes
+	// ArrayList of checkboxes
 	private ArrayList<JCheckBox> boxList = new ArrayList<JCheckBox>();
 	// list of sessions
 	private ArrayList<Session> session = new ArrayList<Session>();
@@ -159,12 +159,6 @@ public class Base implements ActionListener
 	public Base() throws SQLException
 	{
 
-//populating dummy activity list
-		activityList = new ArrayList<String>();
-		activityList.add("swim");
-		activityList.add("basketball");
-		activityList.add("hockey");
-		createCheckBox();
 //login window
 		mainFrame = new JFrame("User Login");
 		menuFrame = new JFrame("Main Menu");
@@ -687,6 +681,27 @@ public class Base implements ActionListener
 		gb.setConstraints(campbyActivityButton, c);
 		camperQuery.add(campbyActivityButton);
 		//TODO: 6.4 search camps by activity
+		campbyActivityButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CamperQueries camperQuery = new CamperQueries();
+				ArrayList<String> activities = new ArrayList<String>();
+				for (int i = boxList.size() - 1; i >=0; i--)
+				{
+				    JCheckBox cb = boxList.get(i);
+				    if (cb.isSelected())
+				    {
+				        activities.add(cb.getText());
+				    }
+				}
+					try {
+						camperQuery.findCampsOfferingActivities(con, activities);
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+						System.out.println(e1);
+					}
+		
+			}});
 		
 		gb.setConstraints(changeSessionButton, c);
 		camperQuery.add(changeSessionButton);
@@ -846,7 +861,15 @@ public class Base implements ActionListener
 			for(Session s : session){
 				selectSession.addItem((s.sessionToString()));
 			}
-			// showMenu();     
+			//populating dummy activity list
+			activityList = new ArrayList<String>();
+			try {
+				activityList = camperQueries.getAllActivities(con);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+				System.out.println(e1);
+			}
+			createCheckBox();
 		}
 		else
 		{
