@@ -165,6 +165,31 @@ public class Base
 	 */ 
 	public Base() throws SQLException
 	{
+		// Login to database
+		try 
+		{
+			// Load the Oracle JDBC driver
+			DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
+			connect();
+		}
+		catch (SQLException ex)
+		{
+			System.out.println("Message: " + ex.getMessage());
+			System.exit(-1);
+		}
+
+		// Some initialization that requires the connection to be established
+
+		// Populate available sessions dropdown
+		availableSessions = camperQuery.getAllSessions(con);
+		for(Session s : availableSessions){
+			selectSession.addItem(s);
+		}
+
+		// Populate activity list and generate checkboxes
+		activityList = camperQuery.getAllActivities(con);
+		createCheckBox();
+		
 		menuFrame = new JFrame("Main Menu");
 
 		// Panel creation
@@ -834,7 +859,7 @@ public class Base
 			}});
 		
 		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.insets = new Insets(10, 10, 5, 0);
+		c.insets = new Insets(0, 0, 0, 0);
 		c.anchor = GridBagConstraints.WEST;
 		gb.setConstraints(searchCampbyActivity, c);
 		camperQueryPage.add(searchCampbyActivity);
@@ -911,32 +936,8 @@ public class Base
 		Dimension d2 = menuFrame.getToolkit().getScreenSize();
 		Rectangle r2 = menuFrame.getBounds();
 		menuFrame.setLocation( (d2.width - r2.width)/2, (d2.height - r2.height)/2 );
-		try 
-		{
-			// Load the Oracle JDBC driver
-			DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
-			connect();
-		}
-		catch (SQLException ex)
-		{
-			System.out.println("Message: " + ex.getMessage());
-			System.exit(-1);
-		}
 
-		// Connection was successful, so show the application window
 		menuFrame.setVisible(true);
-
-		// Some initialization that requires the connection to be established
-
-		// Populate available sessions dropdown
-		availableSessions = camperQuery.getAllSessions(con);
-		for(Session s : availableSessions){
-			selectSession.addItem(s);
-		}
-
-		// Populate activity list and generate checkboxes
-		activityList = camperQuery.getAllActivities(con);
-		createCheckBox();
 	}
 
 
