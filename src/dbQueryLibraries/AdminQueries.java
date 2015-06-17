@@ -111,7 +111,7 @@ public class AdminQueries {
 					ps.setInt(1, instructorID);
 					ps.setInt(2, confirmNo);
 				int rowCount = ps.executeUpdate();
-				Popup.infoBox(rowCount + " lines updated", "Completed");
+				Popup.infoBox("Registration assigned successfully.", "Completed");
 				output = "Completed, " + rowCount + "lines updated.";
 				break;
 			}

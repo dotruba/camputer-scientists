@@ -380,7 +380,6 @@ public class Base
 		gb.setConstraints(assignRegButton, c);
 		adminPanel.add(assignRegButton);
 
-		//TODO: 6.11 (still need to do testing)
 		assignRegButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -453,7 +452,6 @@ public class Base
 		adminPanel.add(multiCamperTxt);
 		gb.setConstraints(multicampButton, c);
 		adminPanel.add(multicampButton);
-
 		//TODO: 6.14 (still need to do testing)
 		multicampButton.addActionListener(new ActionListener() {
             @Override
