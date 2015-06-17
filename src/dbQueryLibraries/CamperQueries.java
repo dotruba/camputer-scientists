@@ -227,5 +227,21 @@ public class CamperQueries {
 		stmt.close();
 	}
 	
+	// get all camps - for use in dropdown menu
+	// TESTED
+	public ArrayList<String> getAllCamps(Connection con) throws SQLException{
+		PreparedStatement stmt = con.prepareStatement("SELECT name FROM Camp");
+		ResultSet rs = stmt.executeQuery();
+		ArrayList<String> camps = new ArrayList<String>();
+		
+		while(rs.next()){
+			camps.add(rs.getString("name"));
+			System.out.println(rs.getString("name"));
+		}
+		
+		stmt.close();
+		return camps;
+	}
+	
 	
 }

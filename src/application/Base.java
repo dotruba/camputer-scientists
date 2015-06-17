@@ -132,8 +132,8 @@ public class Base implements ActionListener
 	JButton registerNowButton = new JButton("Register Now");
 	JButton activitybyCampButton = new JButton("Find");
 	JButton campbyActivityButton = new JButton("Find");
-	JButton registeredB = new JButton("I'm a registered camper.");
-	JButton notRegisteredB = new JButton("I'm a new camper.");
+	JButton registeredB = new JButton("I'm already registered!");
+	JButton notRegisteredB = new JButton("I want to sign up for a Camp!");
 	JButton superviseCheckButton = new JButton("Check");
 	JButton camperCabinButton = new JButton("Assign");
 	JButton checkPayButton = new JButton("Find");
@@ -528,7 +528,8 @@ public class Base implements ActionListener
 		counsellorPanel.add(cabinCamperIDTxt);
 		gb.setConstraints(camperCabinButton, c);
 		counsellorPanel.add(camperCabinButton);
-		//TODO: 6.17 assign camper cabin (do we need a 2nd input box here?)
+		//TODO: 6.17 assign camper cabin (do we need a 2nd input box here?
+		
 		
 		gb.setConstraints(offerActivityLabel, c);
 		counsellorPanel.add(offerActivityLabel);
@@ -542,7 +543,25 @@ public class Base implements ActionListener
 		counsellorPanel.add(offerActivityTxt);
 		gb.setConstraints(offerButton, c);
 		counsellorPanel.add(offerButton);
-		//TODO: 6.18 offer activity
+		// 6.18 offer activity
+		offerButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CouncellorQueries cq = new CouncellorQueries();
+				String activityName = offerActivityTxt.getText();
+				String campName = offerCampTxt.getText();
+				try {
+					cq.offerActivity(con, campName, activityName);
+					Popup.infoBox(campName +  " now offers " + activityName, "Activity Added");
+				} catch (SQLException e1) {
+					// TODO MAYBE? 
+					// if the activity does not exist, direct them somewhere where the can create a new activit.
+
+					Popup.infoBox("That activity or camp does not exist. Please check your input.", "Error");
+				}
+			}
+		});
+		
 		
 		gb.setConstraints(registeredForLabel, c);
 		counsellorPanel.add(registeredForLabel);
@@ -556,11 +575,51 @@ public class Base implements ActionListener
 		counsellorPanel.add(registeredForSessionTxt);
 		gb.setConstraints(checkRegButton, c);
 		counsellorPanel.add(checkRegButton);
-		//TODO: 6.19 check registered for session
+		// 6.19 check registered for session
+		// TODO - turn session and campName into dropdown? 
+		checkRegButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CouncellorQueries cq = new CouncellorQueries();
+				String campName = registeredForCampTxt.getText();
+				int sessionID = Integer.parseInt(registeredForSessionTxt.getText());
+				try {					
+					ArrayList<String> campers = cq.getRegisteredCampers(con, campName, sessionID);
+					StringBuilder c = new StringBuilder();
+					for (String s : campers){
+						c.append(s + "\n");
+					}
+					
+					Popup.infoBox(c.toString(), "Registered Campers");	
+				} catch (SQLException e1) {
+					Popup.infoBox("HELP ME", "Error");
+					e1.printStackTrace();
+					System.out.println(e1);
+				}
+			}});
 		
 		gb.setConstraints(multiSessionButton, c);
 		counsellorPanel.add(multiSessionButton);
 		//TODO: 6.20 multiple sessions
+		// TODO - fix query so it works
+		multiSessionButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AdminQueries aq = new AdminQueries();
+				try {
+					StringBuilder c = new StringBuilder();
+					ArrayList<String> campers = aq.multipleSessions(con);
+					for (String s : campers){
+						c.append(s + "\n");
+					}
+					Popup.infoBox(c.toString(), "Registered Campers");	
+				} catch (SQLException e1) {
+					Popup.infoBox("HELP ME", "Error");
+					e1.printStackTrace();
+					System.out.println(e1);
+				}
+			}});
+		
 		
 		gb.setConstraints(backToUser2, c);
 		counsellorPanel.add(backToUser2);
@@ -624,6 +683,35 @@ public class Base implements ActionListener
 		gb.setConstraints(registerNowButton, c);
 		registerPage.add(registerNowButton);
 		//TODO: 6.1 registration
+		registerNowButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	CamperQueries cq = new CamperQueries();
+            	String camperName = registerNameTxt.getText();
+            	String phone = registerPhoneTxt.getText();
+            	//String campName = 
+            	//TODO - add fields for email, address and camp.
+            	//String email = emailAddressTxt.getTexT();
+            	//String address = registerAddressTxt.getText();
+            	
+            	int sessionID = selectSession.getSelectedIndex() + 1;
+            	
+                try {
+                	// add camper
+					int id = cq.addCamper(con, camperName, "123 Main St", phone, "test@email.com");
+					// register camper
+					try { 
+						cq.completeRegistration(con, id, sessionID, "Beachside Fitness");
+					} catch (SQLException e2) {
+						e2.printStackTrace();
+						System.out.println(e2);
+					}
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					System.out.println(e1);
+				}
+                
+            }});
 		
 		gb.setConstraints(backToCamperSelect, c);
 		registerPage.add(backToCamperSelect);
@@ -642,6 +730,21 @@ public class Base implements ActionListener
 		gb.setConstraints(completePaymentButton, c);
 		camperQuery.add(completePaymentButton);
 		//TODO: 6.2 Make Payment
+		// TODO - add field for confirmation number
+		assignRegButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	CamperQueries cq = new CamperQueries();
+            	int confNo = 0;
+            	// TODO set confNo to confirmation number field
+                try {
+                	cq.makePayment(con, confNo);
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					System.out.println(e1);
+				}
+                
+            }});
 		
 		gb.setConstraints(searchActivitybyCamp, c);
 		camperQuery.add(searchActivitybyCamp);
@@ -655,11 +758,35 @@ public class Base implements ActionListener
 		c.anchor = GridBagConstraints.WEST;
 		gb.setConstraints(activitybyCampButton, c);
 		camperQuery.add(activitybyCampButton);
+		
+		// TODO = activities by camp
+		// TODO suggestion - change camp name to a dropdown instead of a text field?
 		activitybyCampButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Popup.infoBox("Nothing here yo!", "Go away!");
-				//TODO: 6.3 search activity by camp
+				
+				CamperQueries cq = new CamperQueries();
+				String campName = findActivitybyCampTxt.getText();
+				ArrayList<String> a = new ArrayList<String>();
+				
+				try {
+					a = cq.findCampActivities(con, campName);
+					if (a.isEmpty()){
+						Popup.infoBox("No activities offered. Please check name for correctness, or enter a different camp name", "#oops");
+					} else {
+					
+					String acts = "";
+					for (String act : a){
+						acts = acts + act + "\n";
+					}
+					Popup.infoBox(acts, "Activities!");
+					}
+					
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					System.out.println(e1);
+					Popup.infoBox("No such camp. ERROR CANNOT COMPUTE", "Go away!");
+				}
 			}});
 		
 		c.gridwidth = GridBagConstraints.REMAINDER;
@@ -706,10 +833,11 @@ public class Base implements ActionListener
 		gb.setConstraints(changeSessionButton, c);
 		camperQuery.add(changeSessionButton);
 		//TODO: 6.8 change registration
-		
+		// TODO - needs confirmation number input
 		gb.setConstraints(cancelRegButton, c);
 		camperQuery.add(cancelRegButton);
 		//TODO: 6.7 cancel registration
+		// TODO: needs confirmation number input
 		
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		gb.setConstraints(backToCamperSelect2, c);
@@ -812,7 +940,7 @@ s to Oracle database named ug using user supplied username and password
 			System.out.println("\nConnected to Oracle!");
 			
 
-/*		FOR TESTING PURPOSES - KAITLYN	
+		//FOR TESTING PURPOSES - KAITLYN	
  			CamperQueries cq = new CamperQueries();
 			CouncellorQueries ccq = new CouncellorQueries();
 			//cq.addCamper(con, "Bobby Tables", "123 Peach Street", "778-985-6655", "lol@hotmail.com");
@@ -829,8 +957,8 @@ s to Oracle database named ug using user supplied username and password
 			//cq.getRegistration(con, 101);
 			//ccq.offerActivity(con, "Beachside Fitness", "CPR Rescue Breathing");
 			//ccq.addActivity(con, "Swimming Lessons", "Learn how to swim!", "Life jackets, first aid kit");
-			ccq.getRegisteredCampers(con, "Sculptural Pursuit", 5);
-			*/
+			//ccq.getRegisteredCampers(con, "Sculptural Pursuit", 5);
+			cq.getAllCamps(con);
 			
 			return true;
 		}
