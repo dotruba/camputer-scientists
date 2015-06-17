@@ -309,4 +309,40 @@ public class AdminQueries {
 		stmt.close();
 		return output;
 	}
+	
+	public ArrayList<String> getStats(Connection con) throws SQLException{
+		ArrayList<String> stats = new ArrayList<String>();
+		stats.add("Registration numbers by camp:");
+		PreparedStatement ps = con.prepareStatement("SELECT camp_name, Count(camper_id)"
+				+ " FROM Registration"
+				+ " GROUP BY camp_name");
+		ResultSet rs = ps.executeQuery();
+		while(rs.next()){
+			stats.add(rs.getString(1) + " - " + rs.getInt(2));
+			System.out.println(rs.getString(1) + " - " + rs.getInt(2));
+		}
+		ps = con.prepareStatement("SELECT camp_name, MIN(COUNT(camper_id))"
+				+ " FROM Registration"
+				+ " GROUP BY camp_name"
+				+ " HAVING MIN(count(*))");
+		rs = ps.executeQuery();
+		stats.add("Fewest Registrations:");
+		while(rs.next()){
+			stats.add(rs.getString(1) + " - " + rs.getInt(2));
+			System.out.println(rs.getString(1) + " - " + rs.getInt(2));
+		}
+		
+		ps = con.prepareStatement("SELECT camp_name, COUNT(camper_id)"
+				+ " FROM Registration"
+				+ " GROUP BY camp_name"
+				+ " HAVING MIN(count(camper_id))");
+		rs = ps.executeQuery();
+		stats.add("Most Registrations:");
+		while(rs.next()){
+			stats.add(rs.getString(1) + " - " + rs.getInt(2));
+			System.out.println(rs.getString(1) + " - " + rs.getInt(2));
+		}
+		
+		return stats;
+	}
 }

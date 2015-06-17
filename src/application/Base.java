@@ -1030,6 +1030,8 @@ s to Oracle database named ug using user supplied username and password
 			//ccq.addActivity(con, "Swimming Lessons", "Learn how to swim!", "Life jackets, first aid kit");
 			//ccq.getRegisteredCampers(con, "Sculptural Pursuit", 5);
 			//cq.getAllCamps(con);
+			AdminQueries aq = new AdminQueries();
+			aq.getStats(con);
 			
 			return true;
 		}
