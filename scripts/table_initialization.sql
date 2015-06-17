@@ -132,6 +132,7 @@ insert into Activity values('Arranging Class', 'Music Manuscript Paper', 'How to
 insert into Activity values('5km Beach Run', 'Stopwatch, Whistle', 'A brisk run on the beach to get the blood pumping.');
 insert into Activity values('Beach Volleyball', 'Volleyball, Net, Chalk', 'Joining exercise with a game in the summer sun.');
 insert into Activity values('Junk Sculpting', 'Recyclables, Glue Gun', 'Turning trash into treasures.');
+insert into Activity values('Swimming', 'Life Jackets, First Aid Kit', 'Have some fun splashing around!');
 
 insert into Camper values(camper_counter.nextval, 'Jim Curry', '604-555-4936', '3974 W 13th Ave, Vancouver, BC, V6R 3C1, Canada', 'rhpic@aol.com');
 insert into Camper values(camper_counter.nextval, 'Campbell Alexander', '604-555-1585', '3086 W 12th Ave, Vancouver, BC, V6R 3C1, Canada', 'soupsister@aol.com');
@@ -146,6 +147,7 @@ insert into Camp values('Beachside Fitness', 2, 'Sports', 30);
 insert into Camp values('Homerun Baseball Camp', 1, 'Sports', 40);
 insert into Camp values('Orchestral 101', 4, 'Music', 30);
 insert into Camp values('Sculptural Pursuit', 3, 'Arts', 20);
+insert into Camp values('Beachside Fun', 2, 'Swimming', 40);
 
 insert into Cabin values(100, 1, 1);
 insert into Cabin values(200, 2, 1);
@@ -170,6 +172,8 @@ insert into CampOffers values('Orchestral 101', 'Arranging Class');
 insert into CampOffers values('Beachside Fitness', '5km Beach Run');
 insert into CampOffers values('Beachside Fitness', 'Beach Volleyball');
 insert into CampOffers values('Sculptural Pursuit', 'Junk Sculpting');
+insert into CampOffers values('Beachside Fun', 'Swimming');
+insert into CampOffers values('Beachside Fun', 'Beach Volleyball');
 
 insert into Registration values(registration_counter.nextval, 4, 'Rescue 911 Emergency Camp', 101, 400, 55553, 1);
 insert into Registration values(registration_counter.nextval, 1, 'Beachside Fitness', 102, 300, 55555, 0);
@@ -179,3 +183,4 @@ insert into Registration values(registration_counter.nextval, 3, 'Homerun Baseba
 insert into Registration values(registration_counter.nextval, 4, 'Rescue 911 Emergency Camp', 105, 400, 55553, 0);
 insert into Registration values(registration_counter.nextval, 2, 'Sculptural Pursuit', 106, 400, 55554, 0);
 insert into Registration values(registration_counter.nextval, 5, 'Orchestral 101', 107, 600, 55556, 1);
+insert into Registration values(registration_counter.nextval, 1, 'Homerun Baseball Camp', 101, NULL, NULL, 0);
