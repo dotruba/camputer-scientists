@@ -66,7 +66,7 @@ public class CamperQueries {
 		Statement stmt = con.createStatement();
 		ArrayList<Session> sessions = new ArrayList<Session>();
 		
-		ResultSet rs = stmt.executeQuery("SELECT * FROM Session");
+		ResultSet rs = stmt.executeQuery("SELECT * FROM CampSession");
 		while(rs.next()){
 			Session s = new Session(rs.getString("name"), rs.getString("description"));
 			sessions.add(s);

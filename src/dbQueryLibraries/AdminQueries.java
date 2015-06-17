@@ -3,10 +3,12 @@ package dbQueryLibraries;
 import java.sql.*;
 import java.util.*;
 
+import application.Popup;
+
 public class AdminQueries {
 	
 	//6.9
-	public void assignCabinSupervisor(Connection con, int cabinID, String counsellor) throws SQLException
+	public void assignCabinSupervisor(Connection con, int cabinID, int counsellor) throws SQLException
 	{
 		PreparedStatement ps = con.prepareStatement(
 			"SELECT fid " +
@@ -15,27 +17,29 @@ public class AdminQueries {
 				"AND fid IN (SELECT ca.fid " +
 							"FROM Camp ca, Counsellor co " +
 							"WHERE co.camp_name = ca.name " +
-								"AND co.name = ?");
+								"AND co.id = ?)");
 		ps.setInt(1, cabinID);
-		ps.setString(2, counsellor);
+		ps.setInt(2, counsellor);
 		
 		ResultSet rs = ps.executeQuery();
 		ps.clearBatch();
 		ps.clearParameters();
 		
-		if (!rs.isBeforeFirst() ) {    
-			 System.out.println("Error - Counsellor not at cabin's facility");
+		if (!rs.isBeforeFirst() ) {   
+			Popup.infoBox("Counsellor not at cabin's facility", "Error");
+			System.out.println("Error - Counsellor not at cabin's facility");
 		} 
 		else {
 			ps = con.prepareStatement(
 				"UPDATE Counsellor " + 
 				"SET cabin_id = ? " +
-				"WHERE name = ?");
+				"WHERE id = ?");
 			ps.setInt(1, cabinID);
-			ps.setString(2, counsellor);
+			ps.setInt(2, counsellor);
 			int rowCount = ps.executeUpdate();
 			
 			System.out.println("Completed, " + rowCount + "lines updated.");
+			Popup.infoBox(rowCount + "Lines updated", "Completed");
 		}
 		
 		ps.close();
@@ -47,18 +51,15 @@ public class AdminQueries {
 		PreparedStatement ps = con.prepareStatement(
 			"SELECT camp_name "+
 			"FROM Counsellor " +
-			"WHERE id = ?");
+			"WHERE id = ?" +
+			"AND camp_name IS NULL");
 		ps.setInt(1, instructorID);
 		
 		ResultSet rs = ps.executeQuery();
 		ps.clearBatch();
 		ps.clearParameters();
 		
-		String existCamp = rs.getString("camp_name");
-		if(!rs.wasNull() ) {
-			 System.out.println("Error - Counsellor already works at " + existCamp + ".");
-		}
-		else {
+		if(rs.next()) {
 			ps = con.prepareStatement(
 				"UPDATE Counsellor " + 
 				"SET camp_name = ? " +
@@ -67,7 +68,12 @@ public class AdminQueries {
 			ps.setInt(2, instructorID);
 			int rowCount = ps.executeUpdate();
 			
-			System.out.println("Completed, " + rowCount + "lines updated.");
+			Popup.infoBox(rowCount + " lines updated.", "Completed");
+			System.out.println("Completed, " + rowCount + " lines updated.");
+		}
+		else {
+			Popup.infoBox("Counsellor already works at some other camp", "Error");
+			System.out.println("Error - Counsellor already works at some other camp.");
 		}
 		
 		ps.close();
@@ -91,6 +97,7 @@ public class AdminQueries {
 		while (rs.next()) {
 			int ID = rs.getInt(3);
 			if(!rs.wasNull()) {
+				Popup.infoBox("Registration already has assigned counsellor", "Error");
 				output = "Error - Registration already has assigned counsellor.";
 				break;
 			}
@@ -102,13 +109,14 @@ public class AdminQueries {
 					ps.setInt(1, instructorID);
 					ps.setInt(2, confirmNo);
 				int rowCount = ps.executeUpdate();
-				
+				Popup.infoBox(rowCount + " lines updated", "Completed");
 				output = "Completed, " + rowCount + "lines updated.";
 				break;
 			}
 		}
 		
 		if (output == null){
+			Popup.infoBox("Counsellor does not work at the specified camp.", "Error");
 			output = "Error - Counsellor does not work at specified camp.";
 		}
 		System.out.println(output);
@@ -118,7 +126,7 @@ public class AdminQueries {
 	//6.12
 	public void deleteCamper(Connection con, int camperID) throws SQLException{
 		PreparedStatement ps = con.prepareStatement(
-			"SELECT fid " +
+			"SELECT id " +
 			"FROM Camper " +
 			"WHERE id = ? ");
 		ps.setInt(1, camperID);
@@ -128,6 +136,7 @@ public class AdminQueries {
 		ps.clearParameters();
 		
 		if (!rs.isBeforeFirst() ) {    
+			Popup.infoBox("Camper does not exist", "Error");
 			 System.out.println("Error - Camper does not exist");
 		} 
 		else {
@@ -137,6 +146,7 @@ public class AdminQueries {
 			ps.setInt(1, camperID);
 			int rowCount = ps.executeUpdate();
 			
+			Popup.infoBox("The camper has been deleted.", "Deleted");
 			System.out.println("Completed, " + rowCount + "lines deleted.");
 		}
 		
@@ -151,19 +161,28 @@ public class AdminQueries {
 			"FROM Camper C, Registration R " +
 			"WHERE C.id = R.camper_ID " +
 				"AND R.camp_name = ? " +
-				"AND R.is_paid IS FALSE");
+				"AND R.is_paid = 0");
 		ps.setString(1, camp_name);
 		ResultSet rs = ps.executeQuery();
 
 		ArrayList<String> output = new ArrayList<String>();
 		
 		if (!rs.isBeforeFirst() ) {    
+			Popup.infoBox("Every camper has completed the payment.", "All paid");
 			System.out.println("All paid.");
 		} 
 		else {
 			while (rs.next()) {
 				output.add(rs.getString(1));
 			}
+			StringBuilder msg = new StringBuilder();
+			String outputMsg;
+			for(String o : output){
+				msg.append(o);
+				msg.append("\n");
+			}
+			outputMsg = msg.toString();
+			Popup.infoBox(outputMsg,"People who haven't paid: ");
 		}
 		
 		ps.close();
@@ -201,12 +220,21 @@ public class AdminQueries {
 		ArrayList<String> output = new ArrayList<String>();
 		
 		if (!rs.isBeforeFirst() ) {    
+			Popup.infoBox("None of the given campers registered in more than 1 of the given camps","None");
 			System.out.println("None");
 		} 
 		else {
 			while (rs.next()) {
 				output.add(rs.getString(1));
 			}
+			StringBuilder msg = new StringBuilder();
+			String outputMsg;
+			for(String o : output){
+				msg.append(o);
+				msg.append("\n");
+			}
+			outputMsg = msg.toString();
+			Popup.infoBox("Campers registered in more than 1 of the given camps:" + "\n" + outputMsg,"Output");
 		}
 		
 		stmt.executeUpdate("DROP VIEW campersFilter");
@@ -227,11 +255,21 @@ public class AdminQueries {
 		
 		if (!rs.isBeforeFirst() ) {    
 			System.out.println("None");
+			Popup.infoBox("There is no idle instructor. ","None");
 		} 
 		else {
 			while (rs.next()) {
 				output.add(rs.getString(1));
+				
 			}
+			StringBuilder msg = new StringBuilder();
+			String outputMsg;
+			for(String o : output){
+				msg.append(o);
+				msg.append("\n");
+			}
+			outputMsg = msg.toString();
+			Popup.infoBox(outputMsg,"Idle instructors: ");
 		}
 		
 		stmt.close();

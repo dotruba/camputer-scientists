@@ -4,11 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-
-import application.Registration;
-import application.Session;
 
 public class CouncellorQueries {
 
@@ -18,11 +14,19 @@ public class CouncellorQueries {
 	// instructors group)
 	public ArrayList<String> checkCamperSupervision(Connection con, int instructorID) throws SQLException{
 		ArrayList<String> campers = new ArrayList<String>();
-		//PreparedStatement ps = con.prepareStatement("SELECT c1.name, c1.id"
-		//		+ "FROM Registration r, Camper c1,  "
-		//		+ "WHERE ");
-		// TODO
-		return null;
+		PreparedStatement ps = con.prepareStatement("SELECT c.id, c.name "
+				+ "FROM Camper c, Registration r "
+				+ "WHERE c.id = r.camper_id "
+				+ "AND (r.counsellor_id = ? OR r.cabin_id = (SELECT cabin_id FROM Counsellor WHERE id = ?))");
+		ps.setInt(1, instructorID);
+		ps.setInt(2, instructorID);
+
+		ResultSet rs = ps.executeQuery();
+		while(rs.next()) {
+			System.out.println(rs.getString(1) + " - " + rs.getString(2));
+			campers.add(rs.getString(1) + " - " + rs.getString(2));
+		}
+		return campers;
 	}
 	
 	// assign a student to a cabin --> find facility that is offered, and then assign to cabin
