@@ -958,7 +958,8 @@ s to Oracle database named ug using user supplied username and password
 			//ccq.offerActivity(con, "Beachside Fitness", "CPR Rescue Breathing");
 			//ccq.addActivity(con, "Swimming Lessons", "Learn how to swim!", "Life jackets, first aid kit");
 			//ccq.getRegisteredCampers(con, "Sculptural Pursuit", 5);
-			cq.getAllCamps(con);
+			//cq.getAllCamps(con);
+			//ccq.assignCamperToCabin(con, 106);
 			
 			return true;
 		}
