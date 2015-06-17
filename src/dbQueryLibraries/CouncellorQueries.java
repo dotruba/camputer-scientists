@@ -32,24 +32,29 @@ public class CouncellorQueries {
 	// assign a student to a cabin --> find facility that is offered, and then assign to cabin
 	// with the fewest students in it. 
 	public void assignCamperToCabin(Connection con, int confNo) throws SQLException {
-		PreparedStatement ps = con.prepareStatement("UPDATE Registration ");
-		
+		PreparedStatement ps = con.prepareStatement(null);
+		// TODO 
 		
 	}
 	
+	// Activity added to activities table - must be done prior to a camp offering a new activity that doesn't exist
+	// TESTED
 	public void addActivity(Connection con, String actName, String description, String supplies) throws SQLException {
-		PreparedStatement ps = con.prepareStatement("INSERT INTO Activity"
+		PreparedStatement ps = con.prepareStatement("INSERT INTO Activity "
 				+ "VALUES (?, ?, ?)");
 		ps.setString(1, actName);
 		ps.setString(2, description);
 		ps.setString(3, supplies);
-		ps.executeUpdate();
+		int rc = ps.executeUpdate();
+		
+		System.out.println(actName + " added to activities, rows updated: " + rc);
 		
 		ps.close();
 		
 	}
 	
 	// Add an entry to "campOffers" to indicate that a camp is now offering a certain activity
+	// TESTED
 	public void offerActivity(Connection con, String campName, String activityName) throws SQLException {
 		// TODO: Check to make sure it doesn't contain that activity already?
 		// Should be checked by key.
@@ -57,23 +62,28 @@ public class CouncellorQueries {
 				+ "VALUES (?, ?)");
 		ps.setString(1, campName);
 		ps.setString(2, activityName);
-		ps.executeUpdate();
+		int rc = ps.executeUpdate();
+		
+		System.out.println(campName + " now offers " + activityName + ", rows updated: " + rc);
+		
 		ps.close();
 	}
 	
 	// given a camp and session, return a list of all campers registered 
-	public ArrayList<String> getRegisteredCampers(Connection con, String campName, String sessionName) throws SQLException {
+	// TESTED
+	public ArrayList<String> getRegisteredCampers(Connection con, String campName, int sessionID) throws SQLException {
 		PreparedStatement ps = con.prepareStatement(""
 				+ "SELECT c.id, c.name"
-				+ "FROM Registration r, Camper c"
-				+ "WHERE r.camper_id = c.id AND "
-				+ "r.session_name = ? AND r.camp_name = ?");
-		ps.setString(1, sessionName);
+				+ " FROM Registration r, Camper c"
+				+ " WHERE r.camper_id = c.id AND "
+				+ "r.sid = ? AND r.camp_name = ?");
+		ps.setInt(1, sessionID);
 		ps.setString(2, campName);
 		ResultSet rs = ps.executeQuery();
 		ArrayList<String> campers = new ArrayList<String>();
 		while(rs.next()){
 			campers.add(rs.getString(1) + " - " + rs.getString(2));
+			System.out.println(rs.getString(1) + " - " + rs.getString(2));
 		}
 		ps.close();
 		return campers;	

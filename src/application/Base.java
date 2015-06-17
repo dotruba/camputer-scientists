@@ -786,12 +786,14 @@ s to Oracle database named ug using user supplied username and password
 
 		try 
 		{
-			//con = DriverManager.getConnection(connectURL,"ora_k2r7","a25920109");
-			con = DriverManager.getConnection(connectURL, username, password);
+			con = DriverManager.getConnection(connectURL,"ora_k2r7","a25920109");
+			//con = DriverManager.getConnection(connectURL, username, password);
 
 			System.out.println("\nConnected to Oracle!");
 			
-			CamperQueries cq = new CamperQueries();
+/*		FOR TESTING PURPOSES - KAITLYN	
+ 			CamperQueries cq = new CamperQueries();
+			CouncellorQueries ccq = new CouncellorQueries();
 			//cq.addCamper(con, "Bobby Tables", "123 Peach Street", "778-985-6655", "lol@hotmail.com");
 			//cq.completeRegistration(con, 102, 4, "Sculptural Pursuit");
 			//cq.makePayment(con, 110);
@@ -803,8 +805,11 @@ s to Oracle database named ug using user supplied username and password
 			//cq.findCampsOfferingActivities(con, activities);
 			//cq.cancelRegistration(con, 104);
 			//cq.switchSession(con, 101, 5);
-			cq.getRegistration(con, 101);
-			
+			//cq.getRegistration(con, 101);
+			//ccq.offerActivity(con, "Beachside Fitness", "CPR Rescue Breathing");
+			//ccq.addActivity(con, "Swimming Lessons", "Learn how to swim!", "Life jackets, first aid kit");
+			ccq.getRegisteredCampers(con, "Sculptural Pursuit", 5);
+			*/
 			return true;
 		}
 		catch (SQLException ex)
