@@ -188,8 +188,11 @@ public class CamperQueries {
 			msg.append("\n");
 		}
 		outputMsg = msg.toString();
-		Popup.infoBox(outputMsg, "#oops");
-		
+		if(camps.size()>0){
+			Popup.infoBox(outputMsg, "Output");
+		}else{
+			Popup.infoBox("No camp offers all of the selected activities.", "Output");
+		}
 		
 		stmt.close();
 		return camps;
@@ -254,7 +257,15 @@ public class CamperQueries {
 				+ " SET sid = " + sessionID
 				+ " WHERE conf_num = " + confNo);
 		
-		System.out.println("Session switched to " + sessionID + ", rows updated: " + rc);
+		
+		if(rc>0){
+			Popup.infoBox("Session switched to "+ sessionID, "Update completed");
+			System.out.println("Session switched to " + sessionID + ", rows updated: " + rc);
+		}else{
+			Popup.infoBox("The change was unsuccessful. Please check your input.", "Error");
+			System.out.println("rows updated: " + rc);
+		}
+		
 		
 		stmt.close();
 	}
