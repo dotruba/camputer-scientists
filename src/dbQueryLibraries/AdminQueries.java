@@ -309,6 +309,8 @@ public class AdminQueries {
 	
 	public ArrayList<String> getStats(Connection con) throws SQLException{
 		ArrayList<String> stats = new ArrayList<String>();
+		
+		// AGGREGATION - COUNT of campers per session
 		stats.add("Registration numbers by camp:");
 		PreparedStatement ps = con.prepareStatement("SELECT camp_name, Count(camper_id)"
 				+ " FROM Registration"
@@ -318,28 +320,77 @@ public class AdminQueries {
 			stats.add(rs.getString(1) + " - " + rs.getInt(2));
 			System.out.println(rs.getString(1) + " - " + rs.getInt(2));
 		}
-		ps = con.prepareStatement("SELECT camp_name, MIN(COUNT(camper_id))"
+
+		
+		// NESTED AGGREGATION - average 
+		ps = con.prepareStatement("SELECT AVG(COUNT(camper_id))"
 				+ " FROM Registration"
-				+ " GROUP BY camp_name"
-				+ " HAVING MIN(count(*))");
+				+ " GROUP BY camp_name");
 		rs = ps.executeQuery();
-		stats.add("Fewest Registrations:");
+		stats.add("Average # of students per camp: ");
+		System.out.println("Average number of students per camp: ");
+		while(rs.next()){
+			stats.add(rs.getString(1));
+			System.out.println(rs.getString(1));
+		}
+		
+		// NESTED AGGREGATION - minimum
+		ps = con.prepareStatement("SELECT MIN(COUNT(camper_id))"
+				+ " FROM Registration"
+				+ " GROUP BY camp_name");
+		rs = ps.executeQuery();
+		stats.add("Min # of students registered for camp: ");
+		System.out.println("Min # of students registered in a camp:");
+		while(rs.next()){
+			stats.add(rs.getString(1));
+			System.out.println(rs.getString(1));
+		}
+		
+		// NESTED AGGREGATION - max
+		ps = con.prepareStatement("SELECT MAX(COUNT(camper_id))"
+				+ " FROM Registration"
+				+ " GROUP BY camp_name");
+		rs = ps.executeQuery();
+		stats.add("Max # of students registered for camp: ");
+		System.out.println("Max # of students registered in a camp:");
+		while(rs.next()){
+			stats.add(rs.getString(1));
+			System.out.println(rs.getString(1));
+		}
+		
+		// CAMP FEE INFO
+		ps = con.prepareStatement("SELECT * FROM Typefee");
+		rs = ps.executeQuery();
+		stats.add("Info about Camp Fees:");
+		System.out.println("Info about Camp Fees:");
 		while(rs.next()){
 			stats.add(rs.getString(1) + " - " + rs.getInt(2));
 			System.out.println(rs.getString(1) + " - " + rs.getInt(2));
 		}
 		
-		ps = con.prepareStatement("SELECT camp_name, COUNT(camper_id)"
-				+ " FROM Registration"
-				+ " GROUP BY camp_name"
-				+ " HAVING count(camper_id)");
+		// MINIMUM FEE
+		ps = con.prepareStatement("SELECT MIN(fee)"
+				+ " FROM TypeFee");
 		rs = ps.executeQuery();
-		stats.add("Most Registrations:");
+		stats.add("Lowest Fee:");
+		System.out.println("Lowest Fee:");
 		while(rs.next()){
-			stats.add(rs.getString(1) + " - " + rs.getInt(2));
-			System.out.println(rs.getString(1) + " - " + rs.getInt(2));
+			stats.add(rs.getString(1));
+			System.out.println(rs.getString(1));
 		}
 		
+		// MAXIMUM FEE
+		ps = con.prepareStatement("SELECT MAX(fee)"
+				+ " FROM TypeFee");
+		rs = ps.executeQuery();
+		System.out.println("Highest Fee:");
+		stats.add("Highest Fee:");
+		while(rs.next()){
+			stats.add(rs.getString(1));
+			System.out.println(rs.getString(1));
+		}
+		
+		ps.close();
 		return stats;
 	}
 }
