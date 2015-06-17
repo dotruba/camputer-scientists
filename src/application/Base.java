@@ -711,7 +711,6 @@ public class Base
 		paySelect.addItem("No");
 
 		// 6.1 registration
-		// TODO: two phone number input boxes. Figure out which one isn't doing anything and remove
 		registerNowButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
