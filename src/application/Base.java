@@ -93,7 +93,9 @@ public class Base
 	private JLabel regCampNameLabel = new JLabel("Enter the camp to register: ");
 	private JLabel confNoLabel = new JLabel("Enter your confirmation#: ");
 	private JLabel payLabel = new JLabel("Complete registration payment: ");
-
+	private JLabel cancelLabel = new JLabel("Enter confirmation# to cancel registration: ");
+	private JLabel changeLabel = new JLabel("Enter confirmation# to change registered session: ");
+	
 	// textfields
 	private JTextField registerNameTxt = new JTextField(10);
 	private JTextField cabinIDtxt = new JTextField(10);
@@ -118,6 +120,8 @@ public class Base
 	private JTextField emailTxt = new JTextField(10);
 	private JTextField regCampNameTxt = new JTextField(10);
 	private JTextField payConfNoTxt = new JTextField(10);
+	private JTextField cancelConfNoTxt = new JTextField(10);
+	private JTextField changeTxt = new JTextField(10);
 	
 	//Buttons
 	JButton backToUser = new JButton("Return to user selection.");
@@ -148,6 +152,7 @@ public class Base
 	JButton checkRegButton = new JButton("Check");
 	JButton multiSessionButton = new JButton("Find campers registered in more than 1 session");
 	JButton deleteCamperButton = new JButton("Delete");
+	JButton statButton = new JButton("Show registration statistics. ");
 	
 	//Creating activity check boxes
 	private void createCheckBox() {
@@ -165,6 +170,31 @@ public class Base
 	 */ 
 	public Base() throws SQLException
 	{
+		// Login to database
+		try 
+		{
+			// Load the Oracle JDBC driver
+			DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
+			connect();
+		}
+		catch (SQLException ex)
+		{
+			System.out.println("Message: " + ex.getMessage());
+			System.exit(-1);
+		}
+
+		// Some initialization that requires the connection to be established
+
+		// Populate available sessions dropdown
+		availableSessions = camperQuery.getAllSessions(con);
+		for(Session s : availableSessions){
+			selectSession.addItem(s);
+		}
+
+		// Populate activity list and generate checkboxes
+		activityList = camperQuery.getAllActivities(con);
+		createCheckBox();
+		
 		menuFrame = new JFrame("Main Menu");
 
 		// Panel creation
@@ -464,6 +494,10 @@ public class Base
 				}
                 
             }});
+		
+		gb.setConstraints(statButton, c);
+		adminPanel.add(statButton);
+		//TODO: show stats
 		
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(10, 10, 5, 0);
@@ -779,7 +813,6 @@ public class Base
 		gb.setConstraints(completePaymentButton, c);
 		camperQueryPage.add(completePaymentButton);
 
-		//TODO: 6.2 Make Payment (Still require testing)
 		completePaymentButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -787,6 +820,7 @@ public class Base
 				try {
 					camperQuery.makePayment(con, confNo);
 				} catch (SQLException e1) {
+					Popup.infoBox("Invalid registration#.", "#oops");
 					e1.printStackTrace();
 				}
 			}});
@@ -833,7 +867,7 @@ public class Base
 			}});
 		
 		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.insets = new Insets(10, 10, 5, 0);
+		c.insets = new Insets(0, 0, 0, 0);
 		c.anchor = GridBagConstraints.WEST;
 		gb.setConstraints(searchCampbyActivity, c);
 		camperQueryPage.add(searchCampbyActivity);
@@ -846,12 +880,12 @@ public class Base
 			camperQueryPage.add(box);
 		}
 		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.insets = new Insets(10, 10, 5, 0);
+		c.insets = new Insets(0, 0, 0, 0);
 		c.anchor = GridBagConstraints.WEST;
 		gb.setConstraints(campbyActivityButton, c);
 		camperQueryPage.add(campbyActivityButton);
 
-		//TODO: 6.4 search camps by activity
+		//TODO: 6.4 search camps by activity still gotta add msg
 		campbyActivityButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -873,16 +907,48 @@ public class Base
 		
 			}});
 		
+		gb.setConstraints(changeLabel, c);
+		camperQueryPage.add(changeLabel);
+		gb.setConstraints(changeTxt, c);
+		camperQueryPage.add(changeTxt);
 		gb.setConstraints(changeSessionButton, c);
 		camperQueryPage.add(changeSessionButton);
-
 		//TODO: 6.8 change registration
 		// TODO - needs confirmation number input
+		changeSessionButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CamperQueries camperQuery = new CamperQueries();
+				int confNo = Integer.parseInt(changeTxt.getText());
+				try {
+					camperQuery.cancelRegistration(con, confNo);
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					System.out.println(e1);
+				}	
+			}});
+		
+		gb.setConstraints(cancelLabel, c);
+		camperQueryPage.add(cancelLabel);
+		gb.setConstraints(cancelConfNoTxt, c);
+		camperQueryPage.add(cancelConfNoTxt);
 		gb.setConstraints(cancelRegButton, c);
 		camperQueryPage.add(cancelRegButton);
-
-		//TODO: 6.7 cancel registration
-		// TODO: needs confirmation number input
+		cancelRegButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CamperQueries camperQuery = new CamperQueries();
+				int confNo = Integer.parseInt(cancelConfNoTxt.getText());
+				try {
+					camperQuery.cancelRegistration(con, confNo);
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					System.out.println(e1);
+				}
+				
+			}});
+		
+		
 		
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		gb.setConstraints(backToCamperSelect2, c);
@@ -910,32 +976,8 @@ public class Base
 		Dimension d2 = menuFrame.getToolkit().getScreenSize();
 		Rectangle r2 = menuFrame.getBounds();
 		menuFrame.setLocation( (d2.width - r2.width)/2, (d2.height - r2.height)/2 );
-		try 
-		{
-			// Load the Oracle JDBC driver
-			DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
-			connect();
-		}
-		catch (SQLException ex)
-		{
-			System.out.println("Message: " + ex.getMessage());
-			System.exit(-1);
-		}
 
-		// Connection was successful, so show the application window
 		menuFrame.setVisible(true);
-
-		// Some initialization that requires the connection to be established
-
-		// Populate available sessions dropdown
-		availableSessions = camperQuery.getAllSessions(con);
-		for(Session s : availableSessions){
-			selectSession.addItem(s);
-		}
-
-		// Populate activity list and generate checkboxes
-		activityList = camperQuery.getAllActivities(con);
-		createCheckBox();
 	}
 
 	/*
