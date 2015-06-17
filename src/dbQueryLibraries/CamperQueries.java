@@ -16,45 +16,52 @@ public class CamperQueries {
 	public CamperQueries(){}
 	
 	// 6.1 - Add Camper and Complete Registration
+	// TESTED
 	public int addCamper(Connection con, String name, String address, String phone, String email) throws SQLException
 	{
 		Statement stmt = con.createStatement();
-		int rowCount = stmt.executeUpdate(
-				"INSERT INTO Camper" +
-				" VALUES (camper_counter.nextval" + 
-					name +
-					phone +
-					address + 
-					email);
+		String query = "INSERT INTO Camper(id, name, phone_num, address, email)" +
+				" VALUES (camper_counter.nextval, '" + 
+				name + "', '" +
+				phone + "', '" +
+				address + "', '" +
+				email + "')";
+		System.out.println(query);
+		int rowCount = stmt.executeUpdate(query);
 		
-		ResultSet rs = stmt.executeQuery("SELECT camper_id"
-				+ "FROM Camper"
-				+ "WHERE 'camper_id' = camper_counter.currval");
+		ResultSet rs = stmt.executeQuery("SELECT camper_counter.currval"
+				+ " FROM Camper");
 		
-		int camperID = rs.getInt("camper_id");		
-		System.out.println("Camper added, rows updated:" + rowCount);
+		int camperID = 0;
+		while(rs.next()){
+			camperID = rs.getInt(1);	
+		}
+		System.out.println("Camper " + camperID + " added, rows updated:" + rowCount);
 		
 		stmt.close();
 		return camperID;
 	}
 	
-
-	public int completeRegistration(Connection con, int camperID, String sessionName, String campName) throws SQLException
+	// Adds registration to table
+	// TESTED
+	public int completeRegistration(Connection con, int camperID, int sessionID, String campName) throws SQLException
 	{
 		Statement stmt = con.createStatement();
-		int rowCount = stmt.executeUpdate(
-			"INSERT INTO Registration(conf_num, s_name, camp_name, camper_id, is_paid)"
-			+ " VALUES (registration_counter.nextval" + 
-				sessionName +
-				campName +
-				camperID + 
-				false
-				);
-		ResultSet rs = stmt.executeQuery("SELECT conf_num"
-				+ "FROM Registration"
-				+ "WHERE 'conf_num' = registration_counter.currval");
+		String query = "INSERT INTO Registration(conf_num, sid, camp_name, camper_id, is_paid)"
+			+ " VALUES (registration_counter.nextval, " + 
+				sessionID + ", '" +
+				campName + "', " +
+				camperID + ", " +
+				0 + ")";
+		System.out.println(query);
+		int rowCount = stmt.executeUpdate(query);
+		ResultSet rs = stmt.executeQuery("SELECT registration_counter.currval"
+				+ " FROM Registration");
 		
-		int confNo= rs.getInt("camper_id");	
+		int confNo = 0;
+		rs.next();
+		confNo = rs.getInt(1);
+
 		System.out.println("Registration Completed, rows updated: " + rowCount);
 		
 		
@@ -63,6 +70,7 @@ public class CamperQueries {
 	}
 	
 	// Get all sessions - for creating dropdown in registration page
+	// TESTED
 	public ArrayList<Session> getAllSessions(Connection con) throws SQLException {
 		Statement stmt = con.createStatement();
 		ArrayList<Session> sessions = new ArrayList<Session>();
@@ -70,33 +78,39 @@ public class CamperQueries {
 		ResultSet rs = stmt.executeQuery("SELECT * FROM CampSession");
 		while(rs.next()){
 			Session s = new Session(rs.getString("name"), rs.getString("description"));
+			System.out.println(rs.getString("name"));
 			sessions.add(s);
 		}
 		
+		System.out.println();
 		stmt.close();
 		return sessions;
 	}
 
 	// 6.2 - Make Payment
+	// TESTED
 	public void makePayment(Connection con, int confNo) throws SQLException{
 		Statement stmt = con.createStatement();
 		int rowCount = stmt.executeUpdate("UPDATE Registration"
-				+ "SET paid = true"
-				+ "WHERE conf_no = " + confNo);
+				+ " SET is_paid = 1"
+				+ " WHERE conf_num = " + confNo);
 		
 		System.out.println("Payment made, rows updated: " + rowCount);
 		stmt.close();
 	}
 	
+	// Finds all activities offered at a certain camp
+	// TESTED
 	public ArrayList<String> findCampActivities(Connection con, String campName) throws SQLException{
 		Statement stmt = con.createStatement();
 		ResultSet rs = stmt.executeQuery(
 				"SELECT activity_name"
-				+ "FROM CampOffers"
-				+ "WHERE camp_name = " + campName);
+				+ " FROM CampOffers"
+				+ " WHERE camp_name = '" + campName + "'");
 		ArrayList<String> activities = new ArrayList<String>();
 		while(rs.next()){
 			activities.add(rs.getString("activity_name"));
+			System.out.println(rs.getString("activity_name"));
 		}
 		
 		System.out.println("Num of activities offered: " + activities.size());
@@ -104,15 +118,18 @@ public class CamperQueries {
 		return activities;
 	}
 	
+	// gets all activities
+	// TESTED
 	public ArrayList<String> getAllActivities(Connection con) throws SQLException{
 		Statement stmt = con.createStatement();
 		ResultSet rs = stmt.executeQuery(
-				"SELECT activity_name"
-				+ "FROM Activity");
+				"SELECT name"
+				+ " FROM Activity");
 		
 		ArrayList<String> activities = new ArrayList<String>();
 		while(rs.next()){
-			activities.add(rs.getString("activity_name"));
+			activities.add(rs.getString("name"));
+			System.out.println(rs.getString("name"));
 		}
 		
 		stmt.close();
@@ -125,23 +142,25 @@ public class CamperQueries {
 		// create string of SelectedActivities
 		StringBuilder selectedActivities = new StringBuilder();
 		for (int i = 0; i < activities.size() ; i++) {
-			selectedActivities.append("activity_name = " + activities.get(i));
+			selectedActivities.append("name = '" + activities.get(i) + "'");
 			// if not the last element, add "or"
 			if (i+1 != activities.size()){
 				selectedActivities.append(" OR ");
 			}
 		}
 		
-		// Query using division
-		ResultSet rs = stmt.executeQuery("SELECT camp_name"
-				+ "FROM Camp c1"
-				+ "WHERE NOT EXISTS ((SELECT activity_name"
-								  + "FROM Activity a"
-								  + "WHERE " + selectedActivities
+		String query = "SELECT c1.name"
+				+ " FROM Camp c1"
+				+ " WHERE NOT EXISTS ((SELECT a.name"
+								  + " FROM Activity a"
+								  + " WHERE " + selectedActivities
 								  + ") EXCEPT"
-								  + "SELECT activity_name"
-								  + "FROM CampOffers c2"
-								  + "WHERE c1.camp_name = c2.camp_name");
+								  + " (SELECT activity_name"
+								  + " FROM CampOffers c2"
+								  + " WHERE c1.name = c2.camp_name))";
+		System.out.println(query);
+		// Query using division
+		ResultSet rs = stmt.executeQuery(query);
 		ArrayList<String> camps = new ArrayList<String>();
 		while(rs.next()){
 			camps.add(rs.getString("camp_name"));
@@ -153,19 +172,29 @@ public class CamperQueries {
 		return camps;
 	}
 	
+	//Returns registration object with information about registration
+	// TESTED
 	public Registration getRegistration(Connection con, int confNo) throws SQLException {
 		Statement stmt = con.createStatement();
 		ResultSet rs = stmt.executeQuery("SELECT * FROM Registration"
-				+ "WHERE conf_num = " + confNo);
+				+ " WHERE conf_num = " + confNo);
 		Registration reg = new Registration();
+		
+		rs.next();
 		
 		// set registration
 		reg.setConfNo(rs.getInt("conf_num"));
 		reg.setCamperID(rs.getInt("camper_id"));
 		reg.setCampName(rs.getString("camp_name"));
-		// TODO - figure out int to bool situation
-		//reg.setIsPaid(rs.getInt("is_paid"));
+		int is_paid = rs.getInt("is_paid");
+		if (is_paid == 1){
+			reg.setPaid(true);
+		}
 		reg.setSessionID(rs.getInt("sid"));
+		reg.setCounsellor(rs.getInt("counsellor_id"));
+		reg.setCabin(rs.getInt("cabin_id"));
+		
+		System.out.println(reg.toString());
 		
 		stmt.close();
 		
@@ -173,6 +202,7 @@ public class CamperQueries {
 	}
 	
 	// Deletes registration - no cascade
+	// TESTED
 	public void cancelRegistration(Connection con, int confNo) throws SQLException{
 		PreparedStatement stmt = con.prepareStatement("DELETE FROM Registration WHERE conf_num = ?");
 		stmt.setInt(1, confNo);
@@ -185,11 +215,14 @@ public class CamperQueries {
 	}
 	
 	// takes a confirmation number and a new session Name and changes the session
-	public void switchSession(Connection con, int confNo, String sessionName) throws SQLException{
+	// TESTED
+	public void switchSession(Connection con, int confNo, int sessionID) throws SQLException{
 		Statement stmt = con.createStatement();
-		stmt.executeUpdate("UPDATE Registration"
-				+ "SET session_name = " + sessionName
-				+ "WHERE conf_num = " + confNo);
+		int rc = stmt.executeUpdate("UPDATE Registration"
+				+ " SET sid = " + sessionID
+				+ " WHERE conf_num = " + confNo);
+		
+		System.out.println("Session switched to " + sessionID + ", rows updated: " + rc);
 		
 		stmt.close();
 	}
