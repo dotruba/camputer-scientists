@@ -301,6 +301,7 @@ public class AdminQueries {
 		else {
 			while (rs.next()) {
 				output.add(rs.getString(1) + " - " + rs.getString(2));
+				System.out.println(rs.getString(1) + " - " + rs.getString(2));
 			}
 		}
 		
