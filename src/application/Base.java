@@ -46,6 +46,7 @@ public class Base
 	//drop down menu
 	private JComboBox<Session> selectSession = new JComboBox<Session>();
 	private JComboBox<String> paySelect = new JComboBox<String>();
+	private JComboBox<Session> selectSession2 = new JComboBox<Session>();
 
 	// Connection object
 	private Connection con;
@@ -189,6 +190,7 @@ public class Base
 		availableSessions = camperQuery.getAllSessions(con);
 		for(Session s : availableSessions){
 			selectSession.addItem(s);
+			selectSession2.addItem(s);
 		}
 
 		// Populate activity list and generate checkboxes
@@ -391,8 +393,7 @@ public class Base
 				} catch (SQLException e1) {
 					e1.printStackTrace();
 					System.out.println(e1);
-				}
-                
+				}   
             }});
 		
 		gb.setConstraints(deleteCamperLabel, c);
@@ -885,7 +886,6 @@ public class Base
 		gb.setConstraints(campbyActivityButton, c);
 		camperQueryPage.add(campbyActivityButton);
 
-		//TODO: 6.4 search camps by activity still gotta add msg
 		campbyActivityButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -911,20 +911,22 @@ public class Base
 		camperQueryPage.add(changeLabel);
 		gb.setConstraints(changeTxt, c);
 		camperQueryPage.add(changeTxt);
+		gb.setConstraints(selectSession2, c);
+		camperQueryPage.add(selectSession2);
 		gb.setConstraints(changeSessionButton, c);
 		camperQueryPage.add(changeSessionButton);
-		//TODO: 6.8 change registration
-		// TODO - needs confirmation number input
 		changeSessionButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				CamperQueries camperQuery = new CamperQueries();
 				int confNo = Integer.parseInt(changeTxt.getText());
+				Session selectedSession = (Session) selectSession2.getSelectedItem();
 				try {
-					camperQuery.cancelRegistration(con, confNo);
+					camperQuery.switchSession(con, confNo, selectedSession.getId());
 				} catch (SQLException e1) {
 					e1.printStackTrace();
 					System.out.println(e1);
+					Popup.infoBox("Please check your input.", "Error");
 				}	
 			}});
 		
