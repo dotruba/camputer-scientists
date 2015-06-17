@@ -996,16 +996,16 @@ s to Oracle database named ug using user supplied username and password
 			
 
 		//FOR TESTING PURPOSES - KAITLYN	
- 			CamperQueries cq = new CamperQueries();
-			CouncellorQueries ccq = new CouncellorQueries();
+ 			//CamperQueries cq = new CamperQueries();
+			//CouncellorQueries ccq = new CouncellorQueries();
 			//cq.addCamper(con, "Bobby Tables", "123 Peach Street", "778-985-6655", "lol@hotmail.com");
 			//cq.completeRegistration(con, 102, 4, "Sculptural Pursuit");
 			//cq.makePayment(con, 110);
 			//cq.findCampActivities(con, "Beachside Fitness");
 			//cq.getAllActivities(con);
-			ArrayList<String> activities = new ArrayList<String>();
-			activities.add("5km Beach Run");
-			activities.add("Beach Volleyball");
+			//ArrayList<String> activities = new ArrayList<String>();
+			//activities.add("5km Beach Run");
+			//activities.add("Beach Volleyball");
 			//cq.findCampsOfferingActivities(con, activities);
 			//cq.cancelRegistration(con, 104);
 			//cq.switchSession(con, 101, 5);
@@ -1013,7 +1013,7 @@ s to Oracle database named ug using user supplied username and password
 			//ccq.offerActivity(con, "Beachside Fitness", "CPR Rescue Breathing");
 			//ccq.addActivity(con, "Swimming Lessons", "Learn how to swim!", "Life jackets, first aid kit");
 			//ccq.getRegisteredCampers(con, "Sculptural Pursuit", 5);
-			cq.getAllCamps(con);
+			//cq.getAllCamps(con);
 			
 			return true;
 		}

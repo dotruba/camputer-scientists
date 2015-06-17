@@ -137,12 +137,13 @@ public class CamperQueries {
 	}
 	
 	// Given a list of activities, returns a list of camps offering all of those activities
+	// TESTED
 	public ArrayList<String> findCampsOfferingActivities(Connection con, ArrayList<String> activities) throws SQLException{
 		Statement stmt = con.createStatement();
 		// create string of SelectedActivities
 		StringBuilder selectedActivities = new StringBuilder();
 		for (int i = 0; i < activities.size() ; i++) {
-			selectedActivities.append("name = '" + activities.get(i) + "'");
+			selectedActivities.append("a.name = '" + activities.get(i) + "'");
 			// if not the last element, add "or"
 			if (i+1 != activities.size()){
 				selectedActivities.append(" OR ");
@@ -154,7 +155,7 @@ public class CamperQueries {
 				+ " WHERE NOT EXISTS ((SELECT a.name"
 								  + " FROM Activity a"
 								  + " WHERE " + selectedActivities
-								  + ") EXCEPT"
+								  + ") MINUS"
 								  + " (SELECT activity_name"
 								  + " FROM CampOffers c2"
 								  + " WHERE c1.name = c2.camp_name))";
@@ -163,7 +164,8 @@ public class CamperQueries {
 		ResultSet rs = stmt.executeQuery(query);
 		ArrayList<String> camps = new ArrayList<String>();
 		while(rs.next()){
-			camps.add(rs.getString("camp_name"));
+			camps.add(rs.getString("name"));
+			System.out.println(rs.getString("name"));
 		}
 		
 		System.out.println("Number of camps offering all selected activities: " + camps.size());

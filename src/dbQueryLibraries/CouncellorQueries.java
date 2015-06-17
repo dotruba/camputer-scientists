@@ -32,8 +32,37 @@ public class CouncellorQueries {
 	// assign a student to a cabin --> find facility that is offered, and then assign to cabin
 	// with the fewest students in it. 
 	public void assignCamperToCabin(Connection con, int confNo) throws SQLException {
-		PreparedStatement ps = con.prepareStatement(null);
-		// TODO 
+		
+		String createTable = "CREATE VIEW cabinCount "
+				+ "AS SELECT fid, id AS cabin, count(camper_id) AS num_campers "
+				+ "FROM Cabin LEFT OUTER JOIN Registration "
+				+ "ON Cabin.id = Registration.cabin_id "
+				+ "GROUP BY id, fid";
+		//PreparedStatement ps = con.prepareStatement("DROP VIEW cabinCount");
+		//ps.executeUpdate();
+		PreparedStatement ps = con.prepareStatement(createTable);
+		System.out.println(createTable);
+		ps.executeUpdate();
+		
+		String query = "UPDATE Registration"
+				+ " SET cabin_id = (SELECT fc.cabin "
+								+ "FROM cabinCount fc, Camp c1, Registration r "
+								+ "WHERE r.conf_num = ? and r.camp_name = c1.name"
+								+ " and c1.fid = fc.fid and fc.num_campers <= ALL "
+											+ "(SELECT num_campers FROM cabinCount)) "
+				+ "WHERE conf_num = ?";
+		System.out.println(query);
+		PreparedStatement ps2 = con.prepareStatement(query);
+		ps2.setInt(1, confNo);
+		ps2.setInt(2, confNo);
+		int rc = ps2.executeUpdate();
+		
+		ps = con.prepareStatement("DROP VIEW cabinCount");
+		ps.executeUpdate();
+		
+		ps2.close();
+		ps.close();
+		System.out.println("Camper assigned to cabin. Rows updated: " + rc);
 		
 	}
 	
