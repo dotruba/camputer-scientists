@@ -1030,8 +1030,8 @@ public class Base
 		//ccq.addActivity(con, "Swimming Lessons", "Learn how to swim!", "Life jackets, first aid kit");
 		//ccq.getRegisteredCampers(con, "Sculptural Pursuit", 5);
 		//camperQuery.getAllCamps(con);
-		AdminQueries aq = new AdminQueries();
-		aq.getStats(con);
+		//AdminQueries aq = new AdminQueries();
+		//aq.getStats(con);
 		
 	}
 
