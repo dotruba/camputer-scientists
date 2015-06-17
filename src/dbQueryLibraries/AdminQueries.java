@@ -159,7 +159,7 @@ public class AdminQueries {
 	public ArrayList<String> checkRegPayments(Connection con, String camp_name) throws SQLException
 	{
 		PreparedStatement ps = con.prepareStatement(
-			"SELECT C.phone_num " +
+			"SELECT C.name, C.phone_num " +
 			"FROM CAMPER C, REGISTRATION R " +
 			"WHERE C.id = R.camper_id " +
 				"AND R.camp_name = ? " +
@@ -174,18 +174,14 @@ public class AdminQueries {
 			System.out.println("All paid.");
 		} 
 		else {
+			StringBuilder outputMsg = new StringBuilder();
 			while (rs.next()) {
-				output.add(rs.getString(1));
-				System.out.println(rs.getString(1));
+				String rowOutput = rs.getString("name") + ": " + rs.getString("phone_num") + "\n";
+				outputMsg.append(rowOutput);
+				output.add(rowOutput);
+				System.out.println(rowOutput);
 			}
-			StringBuilder msg = new StringBuilder();
-			String outputMsg;
-			for(String o : output){
-				msg.append(o);
-				msg.append("\n");
-			}
-			outputMsg = msg.toString();
-			Popup.infoBox(outputMsg,"People who haven't paid: ");
+			Popup.infoBox(outputMsg.toString(), "People who haven't paid: ");
 		}
 		
 		ps.close();

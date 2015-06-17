@@ -1,62 +1,61 @@
 package application;
 
-// We need to import the java.sql package to use JDBC
-import java.sql.*;
+import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-// for reading from the command line
-import java.io.*;
 
-// for the login window
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import dbQueryLibraries.AdminQueries;
 import dbQueryLibraries.CamperQueries;
 import dbQueryLibraries.CouncellorQueries;
 
-import com.apple.laf.resources.aqua;
-
-import dbQueryLibraries.AdminQueries;
-import dbQueryLibraries.CamperQueries;
-
-import java.awt.*;
-import java.awt.event.*;
-
-
-/*
- * This class implements a graphical login window and a simple text
- * interface for interacting with the branch table 
- */ 
-public class Base implements ActionListener
+public class Base
 {
+	// Query libraries
+	AdminQueries adminQuery = new AdminQueries();
+	CamperQueries camperQuery = new CamperQueries();
+	CouncellorQueries councellorQuery = new CouncellorQueries();
+
 	// list of activities
 	private ArrayList<String> activityList;
-	// ArrayList of checkboxes
+	// ArrayList of check boxes
 	private ArrayList<JCheckBox> boxList = new ArrayList<JCheckBox>();
 	// list of sessions
-	private ArrayList<Session> session = new ArrayList<Session>();
+	private ArrayList<Session> availableSessions = new ArrayList<Session>();
 	//drop down menu
-	private JComboBox selectSession = new JComboBox();
-	private JComboBox paySelect = new JComboBox();
-	// command line reader 
-	private BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-	private Connection con;
-	// user is allowed 3 login attempts
-	private int loginAttempts = 0;
+	private JComboBox<Session> selectSession = new JComboBox<Session>();
+	private JComboBox<String> paySelect = new JComboBox<String>();
 
-	// components of the login window
-	private JTextField usernameField;
-	private JPasswordField passwordField;
-	private JFrame mainFrame;
-// main frame for our menu
+	// Connection object
+	private Connection con;
+
+	// main frame for our menu
 	private JFrame menuFrame;
 	private final CardLayout cl = new CardLayout();
 	private final JPanel pages = new JPanel(cl);
 	
-// Labels
-	private JLabel usernameLabel = new JLabel("Enter username: ");
-	private JLabel passwordLabel = new JLabel("Enter password: ");
+	// Labels
 	private JLabel menuQuestion = new JLabel("Are you a:");
 	private JLabel adminQuestion = new JLabel("What would you like to do?");
 	private JLabel counsellorQuestion = new JLabel("What would you like to do?");
@@ -64,7 +63,6 @@ public class Base implements ActionListener
 	private JLabel searchActivitybyCamp = new JLabel("Enter a camp to find the activities it offers: ");
 	private JLabel searchCampbyActivity = new JLabel("Find camp(s) that offers all of the selected activities: ");
 	private JLabel registerNameLabel = new JLabel("Name: ");
-	private JLabel registerPhoneLabel = new JLabel("Phone: ");
 	private JLabel registerSessionLabel = new JLabel("Select a session: ");
 	private JLabel registerPayLabel = new JLabel("Pay now?");
 	private JLabel cabinSupervisorLabel = new JLabel("Assign counsellor to supervise a cabin: ");
@@ -77,7 +75,6 @@ public class Base implements ActionListener
 	private JLabel assignRegLabel = new JLabel("Assign registration to a counsellor: ");
 	private JLabel regLabel = new JLabel("Confirmation#: ");
 	private JLabel insRegLabel = new JLabel("Counsellor ID: ");
-	private JLabel checkRegLabel = new JLabel("Check registration payment: ");
 	private JLabel superviseCheckLabel = new JLabel("Enter your ID to check the campers under your supervision: ");
 	private JLabel camperCabinLabel = new JLabel("Enter a Registration # to assign Camper to cabin: "); 
 	private JLabel checkPayLabel = new JLabel("Get phone# for campers who haven't paid from this camp: "); 
@@ -93,14 +90,12 @@ public class Base implements ActionListener
 	private JLabel addressLabel = new JLabel("Address: ");
 	private JLabel phoneLabel = new JLabel("Phone: ");
 	private JLabel emailLabel = new JLabel("Email: ");
-	private JLabel campeNameLabel = new JLabel("Enter the camp to register: ");
+	private JLabel regCampNameLabel = new JLabel("Enter the camp to register: ");
 	private JLabel confNoLabel = new JLabel("Enter your confirmation#: ");
 	private JLabel payLabel = new JLabel("Complete registration payment: ");
 
-// textfields
-	private JTextField registerPhoneTxt = new JTextField(10);
+	// textfields
 	private JTextField registerNameTxt = new JTextField(10);
-	private JTextField registerPayTxt = new JTextField(10);
 	private JTextField cabinIDtxt = new JTextField(10);
 	private JTextField counsellorTxt = new JTextField(10);
 	private JTextField campNameTxt = new JTextField(10);
@@ -121,10 +116,10 @@ public class Base implements ActionListener
 	private JTextField addressTxt = new JTextField(10);
 	private JTextField phoneTxt = new JTextField(10);
 	private JTextField emailTxt = new JTextField(10);
-	private JTextField campeNameTxt = new JTextField(10);
+	private JTextField regCampNameTxt = new JTextField(10);
 	private JTextField payConfNoTxt = new JTextField(10);
 	
-//Buttons
+	//Buttons
 	JButton backToUser = new JButton("Return to user selection.");
 	JButton backToUser2 = new JButton("Return to user selection.");
 	JButton backToUser3 = new JButton("Return to user selection.");
@@ -154,7 +149,7 @@ public class Base implements ActionListener
 	JButton multiSessionButton = new JButton("Find campers registered in more than 1 session");
 	JButton deleteCamperButton = new JButton("Delete");
 	
-//Creating activity check boxes
+	//Creating activity check boxes
 	private void createCheckBox() {
 		for(int i = 0; i<activityList.size();i++){
 			String label;
@@ -170,27 +165,17 @@ public class Base implements ActionListener
 	 */ 
 	public Base() throws SQLException
 	{
-
-//login window
-		mainFrame = new JFrame("User Login");
 		menuFrame = new JFrame("Main Menu");
-		usernameField = new JTextField(10);
-		passwordField = new JPasswordField(10);
-		passwordField.setEchoChar('*');
-		JButton loginButton = new JButton("Log In");
-// Panel creation
-		JPanel contentPane = new JPanel();
+
+		// Panel creation
 		JPanel menuPane = new JPanel();
-		mainFrame.setContentPane(contentPane);
 		menuFrame.setContentPane(menuPane);
 		GridBagLayout gb = new GridBagLayout();
 		GridBagConstraints c = new GridBagConstraints();
-		contentPane.setLayout(gb);
-		contentPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		menuPane.setLayout(gb);
 		menuPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-// add the pages to main menu
+		// add the pages to main menu
 		JPanel userSelect = new JPanel(new GridBagLayout());
 		userSelect.setLayout(gb);
 		userSelect.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -216,17 +201,17 @@ public class Base implements ActionListener
 		registerPage.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		pages.add(registerPage, "register");
 		
-		JPanel camperQuery = new JPanel(new GridBagLayout());
-		camperQuery.setLayout(gb);
-		camperQuery.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		pages.add(camperQuery, "camperQuery");
+		JPanel camperQueryPage = new JPanel(new GridBagLayout());
+		camperQueryPage.setLayout(gb);
+		camperQueryPage.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		pages.add(camperQueryPage, "camperQuery");
 		
 		JPanel completePayment = new JPanel(new GridBagLayout());
 		completePayment.setLayout(gb);
 		completePayment.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		pages.add(completePayment, "pay");
 		
-// place the buttons and label for user selection page
+		// place the buttons and label for user selection page
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(10, 10, 5, 0);
 		c.anchor = GridBagConstraints.CENTER;
@@ -266,8 +251,8 @@ public class Base implements ActionListener
 				cl.show(pages, "camper");
 			}});
 
-// populate sub-pages with stuff
-//admin panel
+		// populate sub-pages with stuff
+		// admin panel
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(10, 10, 5, 0);
 		c.anchor = GridBagConstraints.CENTER;
@@ -298,11 +283,11 @@ public class Base implements ActionListener
 		c.insets = new Insets(0, 0, 0, 0);
 		gb.setConstraints(cabinSupervisorButton, c);
 		adminPanel.add(cabinSupervisorButton);
+
 		//6.9
 		cabinSupervisorButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				AdminQueries adminQuery = new AdminQueries();
 				Integer cabin = Integer.parseInt(cabinIDtxt.getText());
 				Integer counsellor = Integer.parseInt(counsellorTxt.getText());
 					try {
@@ -329,6 +314,7 @@ public class Base implements ActionListener
 		adminPanel.add(campNameTxt);
 		gb.setConstraints(workAtButton, c);
 		adminPanel.add(workAtButton);
+
 		//6.10 set works at
 		workAtButton.addActionListener(new ActionListener() {
             @Override
@@ -337,7 +323,6 @@ public class Base implements ActionListener
             	String campName;
             	insID = Integer.parseInt(insIDTxt.getText());
             	campName = campNameTxt.getText();
-                AdminQueries adminQuery = new AdminQueries();
                 try {
 					adminQuery.setWorksAt(con, insID, campName);
 				} catch (SQLException e1) {
@@ -362,6 +347,7 @@ public class Base implements ActionListener
 		adminPanel.add(insRegTxt);
 		gb.setConstraints(assignRegButton, c);
 		adminPanel.add(assignRegButton);
+
 		//TODO: 6.11 (still need to do testing)
 		assignRegButton.addActionListener(new ActionListener() {
             @Override
@@ -370,7 +356,6 @@ public class Base implements ActionListener
             	int confirmation;
             	insID = Integer.parseInt(insRegTxt.getText());
             	confirmation = Integer.parseInt(regNumTxt.getText());
-                AdminQueries adminQuery = new AdminQueries();
                 try {
 					adminQuery.assignRegToCounsellor(con, insID, confirmation);
 				} catch (SQLException e1) {
@@ -386,13 +371,13 @@ public class Base implements ActionListener
 		adminPanel.add(deleteCamperTxt);
 		gb.setConstraints(deleteCamperButton, c);
 		adminPanel.add(deleteCamperButton);
+
 		// new 6.12 Delete camper
 		deleteCamperButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
             	int camperID;
             	camperID = Integer.parseInt(deleteCamperTxt.getText());
-                AdminQueries adminQuery = new AdminQueries();
                 try {
 					adminQuery.deleteCamper(con, camperID);
 				} catch (SQLException e1) {
@@ -400,8 +385,7 @@ public class Base implements ActionListener
 					System.out.println(e1);
 				}
             }});
-		
-		
+
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.anchor = GridBagConstraints.WEST;
 		c.insets = new Insets(0, 0, 0, 0);
@@ -411,12 +395,11 @@ public class Base implements ActionListener
 		adminPanel.add(checkPayTxt);
 		gb.setConstraints(checkPayButton, c);
 		adminPanel.add(checkPayButton);
+
 		//6.13 check payment
 		checkPayButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ArrayList<String> output;
-                AdminQueries adminQuery = new AdminQueries();
                 String campName = checkPayTxt.getText();
 				try {
 					adminQuery.checkRegPayments(con,campName);
@@ -424,10 +407,9 @@ public class Base implements ActionListener
 					e1.printStackTrace();
 					System.out.println(e1);
 				}
-                
             }});
-		
-		
+
+
 		gb.setConstraints(multicampLabel, c);
 		adminPanel.add(multicampLabel);
 		gb.setConstraints(multiCampsLabel, c);
@@ -440,11 +422,11 @@ public class Base implements ActionListener
 		adminPanel.add(multiCamperTxt);
 		gb.setConstraints(multicampButton, c);
 		adminPanel.add(multicampButton);
+
 		//TODO: 6.14 (still need to do testing)
 		multicampButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                AdminQueries adminQuery = new AdminQueries();
                 String camperIDs = multiCamperTxt.getText();
                 List<String> cID = Arrays.asList(camperIDs.split("\\s*,\\s*"));;
                 ArrayList<Integer> camperIDList = new ArrayList<Integer>();
@@ -469,11 +451,11 @@ public class Base implements ActionListener
 		
 		gb.setConstraints(worklessInstructorButton, c);
 		adminPanel.add(worklessInstructorButton);
+
 		//6.15 check counsellor role
 		worklessInstructorButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                AdminQueries adminQuery = new AdminQueries();
 				try {
 					adminQuery.checkCounsellor(con);
 				} catch (SQLException e1) {
@@ -494,7 +476,7 @@ public class Base implements ActionListener
                 cl.show(pages, "users");
             }});
 		
-//Counsellor page:
+		//Counsellor page:
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(10, 10, 5, 0);
 		c.anchor = GridBagConstraints.CENTER;
@@ -514,7 +496,6 @@ public class Base implements ActionListener
 		superviseCheckButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				CouncellorQueries councellorQuery = new CouncellorQueries();
 				Integer counsellorID = Integer.parseInt(insIDsuperviseTxt.getText());
 				try {
 					ArrayList<String> campers = councellorQuery.checkCamperSupervision(con, counsellorID);
@@ -574,15 +555,15 @@ public class Base implements ActionListener
 		counsellorPanel.add(offerActivityTxt);
 		gb.setConstraints(offerButton, c);
 		counsellorPanel.add(offerButton);
+
 		// 6.18 offer activity
 		offerButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				CouncellorQueries cq = new CouncellorQueries();
 				String activityName = offerActivityTxt.getText();
 				String campName = offerCampTxt.getText();
 				try {
-					cq.offerActivity(con, campName, activityName);
+					councellorQuery.offerActivity(con, campName, activityName);
 					Popup.infoBox(campName +  " now offers " + activityName, "Activity Added");
 				} catch (SQLException e1) {
 					// POSSIBLE UPDATE: if the activity does not exist, direct them somewhere where the can create a new activit.
@@ -605,16 +586,16 @@ public class Base implements ActionListener
 		counsellorPanel.add(registeredForSessionTxt);
 		gb.setConstraints(checkRegButton, c);
 		counsellorPanel.add(checkRegButton);
+
 		// 6.19 check registered for session
 		// TODO - turn session and campName into dropdown? 
 		checkRegButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				CouncellorQueries cq = new CouncellorQueries();
 				String campName = registeredForCampTxt.getText();
 				int sessionID = Integer.parseInt(registeredForSessionTxt.getText());
 				try {					
-					ArrayList<String> campers = cq.getRegisteredCampers(con, campName, sessionID);
+					ArrayList<String> campers = councellorQuery.getRegisteredCampers(con, campName, sessionID);
 					StringBuilder c = new StringBuilder();
 					for (String s : campers){
 						c.append(s + "\n");
@@ -630,15 +611,15 @@ public class Base implements ActionListener
 		
 		gb.setConstraints(multiSessionButton, c);
 		counsellorPanel.add(multiSessionButton);
+
 		//TODO: 6.20 multiple sessions
 		// TODO - fix query so it works
 		multiSessionButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				AdminQueries aq = new AdminQueries();
 				try {
 					StringBuilder c = new StringBuilder();
-					ArrayList<String> campers = aq.multipleSessions(con);
+					ArrayList<String> campers = adminQuery.multipleSessions(con);
 					for (String s : campers){
 						c.append(s + "\n");
 					}
@@ -690,7 +671,7 @@ public class Base implements ActionListener
 				cl.show(pages, "users");
 			}});
 		
-//camper register page
+		//camper register page
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(0, 0, 0, 0);
 		c.anchor = GridBagConstraints.WEST;
@@ -710,49 +691,46 @@ public class Base implements ActionListener
 		registerPage.add(emailLabel);
 		gb.setConstraints(emailTxt, c);
 		registerPage.add(emailTxt);
-		
-		gb.setConstraints(registerPhoneLabel, c);
-		registerPage.add(registerPhoneLabel);
-		gb.setConstraints(registerPhoneTxt, c);
-		registerPage.add(registerPhoneTxt);
 		gb.setConstraints(registerSessionLabel, c);
 		registerPage.add(registerSessionLabel);
 		gb.setConstraints(selectSession, c);
 		registerPage.add(selectSession);
-		gb.setConstraints(campeNameLabel, c);
-		registerPage.add(campeNameLabel);
-		gb.setConstraints(campeNameTxt, c);
-		registerPage.add(campeNameTxt);
+		gb.setConstraints(regCampNameLabel, c);
+		registerPage.add(regCampNameLabel);
+		gb.setConstraints(regCampNameTxt, c);
+		registerPage.add(regCampNameTxt);
 		gb.setConstraints(registerPayLabel, c);
 		registerPage.add(registerPayLabel);
 		gb.setConstraints(paySelect, c);
 		registerPage.add(paySelect);
 		gb.setConstraints(registerNowButton, c);
 		registerPage.add(registerNowButton);
+		
+		// Initialize pay select dropdown
+		paySelect.addItem("Yes");
+		paySelect.addItem("No");
 
 		// 6.1 registration
 		// TODO: two phone number input boxes. Figure out which one isn't doing anything and remove
 		registerNowButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				CamperQueries camperQuery = new CamperQueries();
-				String pay = (String) paySelect.getSelectedItem();
+				String isPaying = (String) paySelect.getSelectedItem();
 				String name = registerNameTxt.getText();
-				String address = registerPhoneTxt.getText();
+				String address = addressTxt.getText();
 				String phone = phoneTxt.getText();
 				String email = emailTxt.getText();
-				// TODO: fix so session is actually getting integer
-				// code below causing errors
-				// int sessionID = (Integer) selectSession.getSelectedItem();
-				int sessionID = 1;
-				String campName = campeNameTxt.getText();
+				Session selectedSession = (Session) selectSession.getSelectedItem();
+				String campName = regCampNameTxt.getText();
 				int confNo;
 				int id;
 				try {
 					// try and add Camper to Camper Table, and then register.
 					id = camperQuery.addCamper(con, name, address, phone, email);
-					confNo = camperQuery.completeRegistration(con, id, sessionID, campName);					
-					if((String)paySelect.getSelectedItem()=="yes"){
+
+					confNo = camperQuery.completeRegistration(con, id, selectedSession.getId(), campName);
+					
+					if(isPaying.equalsIgnoreCase("yes")){
 						camperQuery.makePayment(con, confNo);
 					}
 					Popup.infoBox("Registration is complete. Your confirmation number is " + confNo, "Complete");					
@@ -789,27 +767,26 @@ public class Base implements ActionListener
 				cl.show(pages, "camper");
 			}});
 		
-//camper query page
+		//camper query page
 		gb.setConstraints(camperQuestion, c);
-		camperQuery.add(camperQuestion);
+		camperQueryPage.add(camperQuestion);
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(0, 0, 0, 0);
 		c.anchor = GridBagConstraints.WEST;
 		gb.setConstraints(payLabel, c);
-		camperQuery.add(payLabel);
+		camperQueryPage.add(payLabel);
 		gb.setConstraints(confNoLabel, c);
-		camperQuery.add(confNoLabel);
+		camperQueryPage.add(confNoLabel);
 		gb.setConstraints(payConfNoTxt, c);
-		camperQuery.add(payConfNoTxt);
+		camperQueryPage.add(payConfNoTxt);
 		gb.setConstraints(completePaymentButton, c);
-		camperQuery.add(completePaymentButton);
+		camperQueryPage.add(completePaymentButton);
 
 		//TODO: 6.2 Make Payment (Still require testing)
 		completePaymentButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int confNo = Integer.parseInt(payConfNoTxt.getText());
-				CamperQueries camperQuery = new CamperQueries();
 				try {
 					camperQuery.makePayment(con, confNo);
 				} catch (SQLException e1) {
@@ -818,30 +795,28 @@ public class Base implements ActionListener
 			}});
 		
 		gb.setConstraints(searchActivitybyCamp, c);
-		camperQuery.add(searchActivitybyCamp);
+		camperQueryPage.add(searchActivitybyCamp);
 		c.gridwidth = GridBagConstraints.RELATIVE;
 		c.insets = new Insets(0, 0, 0, 0);
 		c.anchor = GridBagConstraints.WEST;
 		gb.setConstraints(findActivitybyCampTxt, c);
-		camperQuery.add(findActivitybyCampTxt);
+		camperQueryPage.add(findActivitybyCampTxt);
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(0, 0, 0, 0);
 		c.anchor = GridBagConstraints.WEST;
 		gb.setConstraints(activitybyCampButton, c);
-		camperQuery.add(activitybyCampButton);
+		camperQueryPage.add(activitybyCampButton);
 		
 		// Activities by camp
 		// POSSIBLE CHANGE: change camp name to a dropdown instead of a text field?
 		activitybyCampButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-				CamperQueries cq = new CamperQueries();
 				String campName = findActivitybyCampTxt.getText();
 				ArrayList<String> a = new ArrayList<String>();
 				
 				try {
-					a = cq.findCampActivities(con, campName);
+					a = camperQuery.findCampActivities(con, campName);
 					if (a.isEmpty()){
 						Popup.infoBox("No activities offered. Please check name for correctness, or enter a different camp name", "#oops");
 					} else {
@@ -864,25 +839,25 @@ public class Base implements ActionListener
 		c.insets = new Insets(10, 10, 5, 0);
 		c.anchor = GridBagConstraints.WEST;
 		gb.setConstraints(searchCampbyActivity, c);
-		camperQuery.add(searchCampbyActivity);
+		camperQueryPage.add(searchCampbyActivity);
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(0, 0, 0, 0);
 		c.anchor = GridBagConstraints.WEST;
 		for(int i=0; i<boxList.size();i++){
 			JCheckBox box = boxList.get(i);
 			gb.setConstraints(box, c);
-			camperQuery.add(box);
+			camperQueryPage.add(box);
 		}
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(10, 10, 5, 0);
 		c.anchor = GridBagConstraints.WEST;
 		gb.setConstraints(campbyActivityButton, c);
-		camperQuery.add(campbyActivityButton);
+		camperQueryPage.add(campbyActivityButton);
+
 		//TODO: 6.4 search camps by activity
 		campbyActivityButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				CamperQueries camperQuery = new CamperQueries();
 				ArrayList<String> activities = new ArrayList<String>();
 				for (int i = boxList.size() - 1; i >=0; i--)
 				{
@@ -902,17 +877,19 @@ public class Base implements ActionListener
 			}});
 		
 		gb.setConstraints(changeSessionButton, c);
-		camperQuery.add(changeSessionButton);
+		camperQueryPage.add(changeSessionButton);
+
 		//TODO: 6.8 change registration
 		// TODO - needs confirmation number input
 		gb.setConstraints(cancelRegButton, c);
-		camperQuery.add(cancelRegButton);
+		camperQueryPage.add(cancelRegButton);
+
 		//TODO: 6.7 cancel registration
 		// TODO: needs confirmation number input
 		
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		gb.setConstraints(backToCamperSelect2, c);
-		camperQuery.add(backToCamperSelect2);
+		camperQueryPage.add(backToCamperSelect2);
 		backToCamperSelect2.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -922,45 +899,7 @@ public class Base implements ActionListener
 
 		
 		menuPane.add(pages);
-		
-//login related stuff:
-		// place the username label 
-		c.gridwidth = GridBagConstraints.RELATIVE;
-		c.insets = new Insets(10, 10, 5, 0);
-		gb.setConstraints(usernameLabel, c);
-		contentPane.add(usernameLabel);
-		// place the text field for the username 
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.insets = new Insets(10, 0, 5, 10);
-		gb.setConstraints(usernameField, c);
-		contentPane.add(usernameField);
-		// place password label
-		c.gridwidth = GridBagConstraints.RELATIVE;
-		c.insets = new Insets(0, 10, 10, 0);
-		gb.setConstraints(passwordLabel, c);
-		contentPane.add(passwordLabel);
-		// place the password field 
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.insets = new Insets(0, 0, 10, 10);
-		gb.setConstraints(passwordField, c);
-		contentPane.add(passwordField);
-		// place the login button
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.insets = new Insets(5, 10, 10, 10);
-		c.anchor = GridBagConstraints.CENTER;
-		gb.setConstraints(loginButton, c);
-		contentPane.add(loginButton);
-		// register password field and OK button with action event handler
-		passwordField.addActionListener(this);
-		loginButton.addActionListener(this);
-		// anonymous inner class for closing the window
-		mainFrame.addWindowListener(new WindowAdapter() 
-		{
-			public void windowClosing(WindowEvent e) 
-			{ 
-				System.exit(0); 
-			}
-		});
+
 		menuFrame.addWindowListener(new WindowAdapter() 
 		{
 			public void windowClosing(WindowEvent e) 
@@ -969,134 +908,73 @@ public class Base implements ActionListener
 			}
 		});
 		// size the window to obtain a best fit for the components
-		mainFrame.pack();
 		menuFrame.pack();
 		// center the frame
-		Dimension d = mainFrame.getToolkit().getScreenSize();
-		Rectangle r = mainFrame.getBounds();
-		mainFrame.setLocation( (d.width - r.width)/2, (d.height - r.height)/2 );
 		Dimension d2 = menuFrame.getToolkit().getScreenSize();
 		Rectangle r2 = menuFrame.getBounds();
 		menuFrame.setLocation( (d2.width - r2.width)/2, (d2.height - r2.height)/2 );
-		// make the window visible
-		mainFrame.setVisible(true);
-		// place the cursor in the text field for the username
-		usernameField.requestFocus();
 		try 
 		{
 			// Load the Oracle JDBC driver
 			DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
+			connect();
 		}
 		catch (SQLException ex)
 		{
 			System.out.println("Message: " + ex.getMessage());
 			System.exit(-1);
 		}
+
+		// Connection was successful, so show the application window
+		menuFrame.setVisible(true);
+
+		// Some initialization that requires the connection to be established
+
+		// Populate available sessions dropdown
+		availableSessions = camperQuery.getAllSessions(con);
+		for(Session s : availableSessions){
+			selectSession.addItem(s);
+		}
+
+		// Populate activity list and generate checkboxes
+		activityList = camperQuery.getAllActivities(con);
+		createCheckBox();
 	}
 
 
 	/*
-	 * 
-s to Oracle database named ug using user supplied username and password
+	 * Connect to Oracle database named ug using hardcoded user
 	 */ 
-	private boolean connect(String username, String password)
+	private void connect() throws SQLException
 	{
 		String connectURL = "jdbc:oracle:thin:@dbhost.ugrad.cs.ubc.ca:1522:ug"; 
 
-		try 
-		{
-			//con = DriverManager.getConnection(connectURL,"ora_k2r7","a25920109");
-			con = DriverManager.getConnection(connectURL, "ora_v7x8", "a19320126");
+		con = DriverManager.getConnection(connectURL,"ora_m4c8","a40441115");
 
-			System.out.println("\nConnected to Oracle!");
-			
+		System.out.println("\nConnected to Oracle!");
 
-		//FOR TESTING PURPOSES - KAITLYN	
- 			//CamperQueries cq = new CamperQueries();
-			//CouncellorQueries ccq = new CouncellorQueries();
-			//cq.addCamper(con, "Bobby Tables", "123 Peach Street", "778-985-6655", "lol@hotmail.com");
-			//cq.completeRegistration(con, 102, 4, "Sculptural Pursuit");
-			//cq.makePayment(con, 110);
-			//cq.findCampActivities(con, "Beachside Fitness");
-			//cq.getAllActivities(con);
-			//ArrayList<String> activities = new ArrayList<String>();
-			//activities.add("5km Beach Run");
-			//activities.add("Beach Volleyball");
-			//cq.findCampsOfferingActivities(con, activities);
-			//cq.cancelRegistration(con, 104);
-			//cq.switchSession(con, 101, 5);
-			//cq.getRegistration(con, 101);
-			//ccq.offerActivity(con, "Beachside Fitness", "CPR Rescue Breathing");
-			//ccq.addActivity(con, "Swimming Lessons", "Learn how to swim!", "Life jackets, first aid kit");
-			//ccq.getRegisteredCampers(con, "Sculptural Pursuit", 5);
-			//cq.getAllCamps(con);
-			
-			return true;
-		}
-		catch (SQLException ex)
-		{
-			System.out.println("Message: " + ex.getMessage());
-			return false;
-		}
-	}
-	/*
-	 * event handler for login window
-	 */ 
-	public void actionPerformed(ActionEvent e) 
-	{
-		if ( connect(usernameField.getText(), String.valueOf(passwordField.getPassword())) )
-		{
-			// if the username and password are valid, 
-			// remove the login window and display a text menu 
-			mainFrame.dispose();
-			menuFrame.setVisible(true);
-			//initializing session drop down menu
-			String yes = "Yes";
-			String no = "No";
-			paySelect.addItem(yes);
-			paySelect.addItem(no);
-			
-			CamperQueries camperQueries = new CamperQueries();
-			try {
-				session = camperQueries.getAllSessions(con);
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-				System.out.println(e1);
-			}
-			for(Session s : session){
-				selectSession.addItem((s.sessionToString()));
-			}
-			//populating dummy activity list
-			activityList = new ArrayList<String>();
-			try {
-				activityList = camperQueries.getAllActivities(con);
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-				System.out.println(e1);
-			}
-			createCheckBox();
-		}
-		else
-		{
-			loginAttempts++;
-
-			if (loginAttempts >= 3)
-			{
-				mainFrame.dispose();
-				System.exit(-1);
-			}
-			else
-			{
-				// clear the password
-				passwordField.setText("");
-			}
-		}             
+		//FOR TESTING PURPOSES - KAITLYN
+		//cq.addCamper(con, "Bobby Tables", "123 Peach Street", "778-985-6655", "lol@hotmail.com");
+		//cq.completeRegistration(con, 102, 4, "Sculptural Pursuit");
+		//cq.makePayment(con, 110);
+		//cq.findCampActivities(con, "Beachside Fitness");
+		//cq.getAllActivities(con);
+		//ArrayList<String> activities = new ArrayList<String>();
+		//activities.add("5km Beach Run");
+		//activities.add("Beach Volleyball");
+		//cq.findCampsOfferingActivities(con, activities);
+		//cq.cancelRegistration(con, 104);
+		//cq.switchSession(con, 101, 5);
+		//cq.getRegistration(con, 101);
+		//ccq.offerActivity(con, "Beachside Fitness", "CPR Rescue Breathing");
+		//ccq.addActivity(con, "Swimming Lessons", "Learn how to swim!", "Life jackets, first aid kit");
+		//ccq.getRegisteredCampers(con, "Sculptural Pursuit", 5);
+		//camperQuery.getAllCamps(con);
 	}
 
 	public static void main(String args[]) throws SQLException
 	{
+		@SuppressWarnings("unused")
 		Base b = new Base();
-		
-		
 	}
 }
