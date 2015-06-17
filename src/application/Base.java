@@ -662,7 +662,7 @@ public class Base implements ActionListener
 				String address = registerPhoneTxt.getText();
 				String phone = phoneTxt.getText();
 				String email = emailTxt.getText();
-				String sessionName = (String) selectSession.getSelectedItem();
+				int sessionName = (Integer) selectSession.getSelectedItem();
 				String campName = campeNameTxt.getText();
 				int confNo;
 				int id;
