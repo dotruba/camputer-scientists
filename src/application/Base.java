@@ -588,7 +588,6 @@ public class Base
 		counsellorPanel.add(checkRegButton);
 
 		// 6.19 check registered for session
-		// TODO - turn session and campName into dropdown? 
 		checkRegButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
