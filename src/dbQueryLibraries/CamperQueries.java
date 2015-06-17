@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import application.Popup;
 import application.Registration;
 import application.Session;
 
@@ -91,11 +92,22 @@ public class CamperQueries {
 	// TESTED
 	public void makePayment(Connection con, int confNo) throws SQLException{
 		Statement stmt = con.createStatement();
-		int rowCount = stmt.executeUpdate("UPDATE Registration"
+		
+		ResultSet rs = stmt.executeQuery("SELECT is_paid FROM Registration WHERE conf_num = " + confNo);
+		rs.next();
+		int ip = rs.getInt("is_paid");
+		
+		if (ip == 0){
+					int rowCount = stmt.executeUpdate("UPDATE Registration"
 				+ " SET is_paid = 1"
 				+ " WHERE conf_num = " + confNo);
 		
 		System.out.println("Payment made, rows updated: " + rowCount);
+		Popup.infoBox("Payment completed", "Done");
+		} else {
+			Popup.infoBox("The payment for this confirmation# has already been completed", "#oops");
+			System.out.println("Has already paid");
+			}
 		stmt.close();
 	}
 	
@@ -169,6 +181,15 @@ public class CamperQueries {
 		}
 		
 		System.out.println("Number of camps offering all selected activities: " + camps.size());
+		StringBuilder msg = new StringBuilder();
+		String outputMsg;
+		for(String o : camps){
+			msg.append(o);
+			msg.append("\n");
+		}
+		outputMsg = msg.toString();
+		Popup.infoBox(outputMsg, "#oops");
+		
 		
 		stmt.close();
 		return camps;
@@ -211,7 +232,16 @@ public class CamperQueries {
 		//System.out.println(query);
 		int rc = stmt.executeUpdate();
 		
-		System.out.println("Registration: " + confNo + " cancelled, rows updated: " + rc);
+		
+		if(rc == 0){
+			
+			System.out.println("Registration: " + confNo + " is already cancelled, rows updated: " + rc);
+			Popup.infoBox("Registration# " + confNo + " doesn't match any entry in the database.", "Error");
+		}else{
+			System.out.println("Registration: " + confNo + " cancelled, rows updated: " + rc);
+			Popup.infoBox("Registration: " + confNo + " cancelled", "Registration cancelled");
+		}
+		
 
 		stmt.close();
 	}
