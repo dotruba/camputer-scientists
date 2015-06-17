@@ -15,6 +15,11 @@ import dbQueryLibraries.AdminQueries;
 import dbQueryLibraries.CamperQueries;
 import dbQueryLibraries.CouncellorQueries;
 
+import com.apple.laf.resources.aqua;
+
+import dbQueryLibraries.AdminQueries;
+import dbQueryLibraries.CamperQueries;
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -863,7 +868,8 @@ public class Base implements ActionListener
 
 
 	/*
-	 * connects to Oracle database named ug using user supplied username and password
+	 * 
+s to Oracle database named ug using user supplied username and password
 	 */ 
 	private boolean connect(String username, String password)
 	{
@@ -872,8 +878,31 @@ public class Base implements ActionListener
 		try 
 		{
 			con = DriverManager.getConnection(connectURL,"ora_k2r7","a25920109");
+			//con = DriverManager.getConnection(connectURL, username, password);
 
 			System.out.println("\nConnected to Oracle!");
+			
+
+/*		FOR TESTING PURPOSES - KAITLYN	
+ 			CamperQueries cq = new CamperQueries();
+			CouncellorQueries ccq = new CouncellorQueries();
+			//cq.addCamper(con, "Bobby Tables", "123 Peach Street", "778-985-6655", "lol@hotmail.com");
+			//cq.completeRegistration(con, 102, 4, "Sculptural Pursuit");
+			//cq.makePayment(con, 110);
+			//cq.findCampActivities(con, "Beachside Fitness");
+			//cq.getAllActivities(con);
+			ArrayList<String> activities = new ArrayList<String>();
+			activities.add("5km Beach Run");
+			activities.add("Beach Volleyball");
+			//cq.findCampsOfferingActivities(con, activities);
+			//cq.cancelRegistration(con, 104);
+			//cq.switchSession(con, 101, 5);
+			//cq.getRegistration(con, 101);
+			//ccq.offerActivity(con, "Beachside Fitness", "CPR Rescue Breathing");
+			//ccq.addActivity(con, "Swimming Lessons", "Learn how to swim!", "Life jackets, first aid kit");
+			ccq.getRegisteredCampers(con, "Sculptural Pursuit", 5);
+			*/
+			
 			return true;
 		}
 		catch (SQLException ex)
@@ -939,5 +968,7 @@ public class Base implements ActionListener
 	public static void main(String args[]) throws SQLException
 	{
 		Base b = new Base();
+		
+		
 	}
 }

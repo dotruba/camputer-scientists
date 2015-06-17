@@ -7,6 +7,8 @@ import application.Popup;
 
 public class AdminQueries {
 	
+	public AdminQueries(){}
+	
 	//6.9
 	public void assignCabinSupervisor(Connection con, int cabinID, int counsellor) throws SQLException
 	{
@@ -158,8 +160,8 @@ public class AdminQueries {
 	{
 		PreparedStatement ps = con.prepareStatement(
 			"SELECT C.phone_num " +
-			"FROM Camper C, Registration R " +
-			"WHERE C.id = R.camper_ID " +
+			"FROM CAMPER C, REGISTRATION R " +
+			"WHERE C.id = R.camper_id " +
 				"AND R.camp_name = ? " +
 				"AND R.is_paid = 0");
 		ps.setString(1, camp_name);
@@ -174,6 +176,7 @@ public class AdminQueries {
 		else {
 			while (rs.next()) {
 				output.add(rs.getString(1));
+				System.out.println(rs.getString(1));
 			}
 			StringBuilder msg = new StringBuilder();
 			String outputMsg;

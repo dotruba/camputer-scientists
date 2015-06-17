@@ -5,8 +5,11 @@ public class Registration {
 	int confNo;
 	int sessionID;
 	int camperID;
+	int cabinID;
+	int counsellorID;
 	String campName;
-	boolean isPaid;
+	boolean isPaid = false;
+
 	
 	public Registration(){}
 	
@@ -56,6 +59,22 @@ public class Registration {
 	
 	public void setCampName(String campName){
 		this.campName = campName;
+	}
+	
+	public void setCabin(int cabinID){
+		this.cabinID = cabinID;
+	}
+	
+	public int getCabin(){
+		return this.cabinID;
+	}
+	
+	public void setCounsellor(int counsellorID){
+		this.counsellorID = counsellorID;
+	}
+	
+	public int getCounsellor(){
+		return this.counsellorID;
 	}
 	
 	public String toString() {
