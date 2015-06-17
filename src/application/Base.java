@@ -498,7 +498,29 @@ public class Base
 		
 		gb.setConstraints(statButton, c);
 		adminPanel.add(statButton);
-		//TODO: show stats
+		
+		// GET STATISTICS
+		statButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	AdminQueries aq = new AdminQueries();
+				try {
+					ArrayList<String> stats = new ArrayList<String>();
+					stats = aq.getStats(con);
+					StringBuilder string = new StringBuilder();
+					for(String s: stats){
+						string.append(s);
+						string.append("\n");
+					}
+					String toPrint = string.toString();
+					Popup.infoBox(toPrint, "Camp Statistics");
+					
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					System.out.println(e1);
+				}
+                
+            }});
 		
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.insets = new Insets(10, 10, 5, 0);
@@ -1010,8 +1032,8 @@ public class Base
 		//ccq.addActivity(con, "Swimming Lessons", "Learn how to swim!", "Life jackets, first aid kit");
 		//ccq.getRegisteredCampers(con, "Sculptural Pursuit", 5);
 		//camperQuery.getAllCamps(con);
-		AdminQueries aq = new AdminQueries();
-		aq.getStats(con);
+		//AdminQueries aq = new AdminQueries();
+		//aq.getStats(con);
 		
 	}
 

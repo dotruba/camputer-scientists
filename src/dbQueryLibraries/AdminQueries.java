@@ -327,40 +327,37 @@ public class AdminQueries {
 				+ " FROM Registration"
 				+ " GROUP BY camp_name");
 		rs = ps.executeQuery();
-		stats.add("Average # of students per camp: ");
-		System.out.println("Average number of students per camp: ");
-		while(rs.next()){
-			stats.add(rs.getString(1));
-			System.out.println(rs.getString(1));
-		}
+		rs.next();
+		stats.add("\n");
+		stats.add("Average # of students per camp: " + rs.getString(1));
+		System.out.println("Average # of students per camp: :");
+		System.out.println(rs.getString(1));
 		
 		// NESTED AGGREGATION - minimum
 		ps = con.prepareStatement("SELECT MIN(COUNT(camper_id))"
 				+ " FROM Registration"
 				+ " GROUP BY camp_name");
 		rs = ps.executeQuery();
-		stats.add("Min # of students registered for camp: ");
+		rs.next();
+		stats.add("Min # of students registered for camp: " + rs.getString(1));
 		System.out.println("Min # of students registered in a camp:");
-		while(rs.next()){
-			stats.add(rs.getString(1));
-			System.out.println(rs.getString(1));
-		}
+		System.out.println(rs.getString(1));
+		
 		
 		// NESTED AGGREGATION - max
 		ps = con.prepareStatement("SELECT MAX(COUNT(camper_id))"
 				+ " FROM Registration"
 				+ " GROUP BY camp_name");
 		rs = ps.executeQuery();
-		stats.add("Max # of students registered for camp: ");
+		rs.next();
+		stats.add("Max # of students registered for camp: " + rs.getString(1));
 		System.out.println("Max # of students registered in a camp:");
-		while(rs.next()){
-			stats.add(rs.getString(1));
-			System.out.println(rs.getString(1));
-		}
+		System.out.println(rs.getString(1));
 		
 		// CAMP FEE INFO
 		ps = con.prepareStatement("SELECT * FROM Typefee");
 		rs = ps.executeQuery();
+		stats.add("\n");
 		stats.add("Info about Camp Fees:");
 		System.out.println("Info about Camp Fees:");
 		while(rs.next()){
@@ -372,23 +369,19 @@ public class AdminQueries {
 		ps = con.prepareStatement("SELECT MIN(fee)"
 				+ " FROM TypeFee");
 		rs = ps.executeQuery();
-		stats.add("Lowest Fee:");
-		System.out.println("Lowest Fee:");
-		while(rs.next()){
-			stats.add(rs.getString(1));
-			System.out.println(rs.getString(1));
-		}
+		rs.next();
+		stats.add("\n");
+		stats.add("Lowest Fee: " + rs.getInt(1));
+		System.out.println("Lowest Fee: " + rs.getInt(1));
+	
 		
 		// MAXIMUM FEE
 		ps = con.prepareStatement("SELECT MAX(fee)"
 				+ " FROM TypeFee");
 		rs = ps.executeQuery();
-		System.out.println("Highest Fee:");
-		stats.add("Highest Fee:");
-		while(rs.next()){
-			stats.add(rs.getString(1));
-			System.out.println(rs.getString(1));
-		}
+		rs.next();
+		stats.add("Highest Fee: " + rs.getInt(1));
+		System.out.println("Highest Fee: " + rs.getInt(1));
 		
 		ps.close();
 		return stats;
