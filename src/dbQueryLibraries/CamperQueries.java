@@ -77,7 +77,7 @@ public class CamperQueries {
 		
 		ResultSet rs = stmt.executeQuery("SELECT * FROM CampSession");
 		while(rs.next()){
-			Session s = new Session(rs.getString("name"), rs.getString("description"));
+			Session s = new Session(rs.getInt("id"), rs.getString("name"), rs.getString("description"));
 			System.out.println(rs.getString("name"));
 			sessions.add(s);
 		}

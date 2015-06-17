@@ -335,7 +335,7 @@ public class AdminQueries {
 		ps = con.prepareStatement("SELECT camp_name, COUNT(camper_id)"
 				+ " FROM Registration"
 				+ " GROUP BY camp_name"
-				+ " HAVING MIN(count(camper_id))");
+				+ " HAVING count(camper_id)");
 		rs = ps.executeQuery();
 		stats.add("Most Registrations:");
 		while(rs.next()){

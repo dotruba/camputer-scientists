@@ -2,28 +2,43 @@ package application;
 
 public class Session {
 
-	String name;
+	private int id;
+	private String name;
 	// A string indicating start and end date for the session
-	String description;
+	private String description;
 	
-	public Session(String name, String description){
+	public Session(int id, String name, String description){
+		this.id = id;
 		this.name = name;
 		this.description = description;
 	}
-	
-	public String getSessionName(){
-		return this.name;
+
+	public int getId() {
+		return id;
 	}
-	
-	public String getDescription(){
-		return this.description;
+
+	public void setId(int id) {
+		this.id = id;
 	}
-	
-	public String sessionToString(){
-		StringBuilder s = new StringBuilder(this.name + ": " + this.description);
-		String stringSession = s.toString();
-		
-		return stringSession;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String toString(){
+		return this.name + ": " + this.description;
 	}
 
 }
