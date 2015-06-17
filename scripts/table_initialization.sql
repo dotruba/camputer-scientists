@@ -78,8 +78,8 @@ create table Registration(
 	sid number(9,0) not null,
 	camp_name varchar2(50) not null,
 	camper_id number(9,0) not null,
-	cabin_id number(9,0) not null,
-	counsellor_id number (9,0) not null,
+	cabin_id number(9,0),
+	counsellor_id number (9,0),
 	is_paid char check (is_paid in (0,1)),
 	foreign key (sid) references CampSession(id),
 	foreign key (camp_name) references Camp(name),
@@ -173,6 +173,7 @@ insert into CampOffers values('Sculptural Pursuit', 'Junk Sculpting');
 
 insert into Registration values(registration_counter.nextval, 4, 'Rescue 911 Emergency Camp', 101, 400, 55553, 1);
 insert into Registration values(registration_counter.nextval, 1, 'Beachside Fitness', 102, 300, 55555, 0);
+insert into Registration values(registration_counter.nextval, 2, 'Beachside Fitness', 102, NULL, NULL, 0);
 insert into Registration values(registration_counter.nextval, 3, 'Homerun Baseball Camp', 103, 100, 55551, 1);
 insert into Registration values(registration_counter.nextval, 3, 'Homerun Baseball Camp', 104, 200, 55552, 1);
 insert into Registration values(registration_counter.nextval, 4, 'Rescue 911 Emergency Camp', 105, 400, 55553, 0);
