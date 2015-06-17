@@ -611,8 +611,7 @@ public class Base
 		gb.setConstraints(multiSessionButton, c);
 		counsellorPanel.add(multiSessionButton);
 
-		//TODO: 6.20 multiple sessions
-		// TODO - fix query so it works
+		//6.20 multiple sessions
 		multiSessionButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

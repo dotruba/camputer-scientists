@@ -283,15 +283,13 @@ public class AdminQueries {
 	public ArrayList<String> multipleSessions(Connection con) throws SQLException
 	{
 		Statement stmt = con.createStatement();
-		stmt.executeUpdate(
-			"CREATE VIEW campersFilter AS (SELECT R.camper_id, C.name, R.sid " +
-			"FROM Registration R, Camper C " + 
-			"GROUP BY camper_id " +
-			"HAVING COUNT(*) > 1)");
-		
+
 		ResultSet rs = stmt.executeQuery(
-			"SELECT DISTINCT R.camper_id, C.name " +
-			"FROM campersFilter" );
+			"SELECT C.id, C.name, COUNT(R.sid) AS session_count " +
+			"FROM Registration R, Camper C " +
+			"WHERE R.camper_id = C.id " +
+			"GROUP BY C.id, C.name " +
+			"HAVING COUNT(R.sid) > 1");
 		
 		ArrayList<String> output = new ArrayList<String>();
 		
@@ -304,8 +302,7 @@ public class AdminQueries {
 				System.out.println(rs.getString(1) + " - " + rs.getString(2));
 			}
 		}
-		
-		stmt.executeUpdate("DROP VIEW campersFilter");
+
 		stmt.close();
 		return output;
 	}
