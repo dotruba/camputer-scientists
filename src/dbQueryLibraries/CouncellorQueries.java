@@ -31,7 +31,6 @@ public class CouncellorQueries {
 	
 	// assign a student to a cabin --> find facility that is offered, and then assign to cabin
 	// with the fewest students in it. 
-	//TODO: Kaitlyn Fix this plz
 	public int assignCamperToCabin(Connection con, int confNo) throws SQLException {
 		
 		String createTable = "CREATE VIEW cabinCount "
@@ -50,7 +49,8 @@ public class CouncellorQueries {
 								+ "FROM cabinCount fc, Camp c1, Registration r "
 								+ "WHERE r.conf_num = ? and r.camp_name = c1.name"
 								+ " and c1.fid = fc.fid and fc.num_campers <= ALL "
-											+ "(SELECT num_campers FROM cabinCount)) "
+											+ "(SELECT num_campers FROM cabinCount cc"
+											+ " WHERE r.camp_name = c1.name and c1.fid = cc.fid)) "
 				+ "WHERE conf_num = ?";
 		System.out.println(query);
 		PreparedStatement ps2 = con.prepareStatement(query);
