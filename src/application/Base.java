@@ -441,7 +441,11 @@ public class Base
             }});
 
 
-		gb.setConstraints(multicampLabel, c);
+/*	MULTIPLE CAMP QUERY 
+ * 	Removed from UI, information provided was very similar to multiple sessions, 
+ *  but less practically useful, and was making the UI very crowded. Left to be added in
+ *  in the case of UI or functionality expansion.
+ 		gb.setConstraints(multicampLabel, c);
 		adminPanel.add(multicampLabel);
 		gb.setConstraints(multiCampsLabel, c);
 		adminPanel.add(multiCampsLabel);
@@ -454,7 +458,7 @@ public class Base
 		gb.setConstraints(multicampButton, c);
 		adminPanel.add(multicampButton);
 
-		//TODO: 6.14 (still need to do testing) (remove this maybe? might not be worth the time)
+		// 6.14 - get multiple camps
 		multicampButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -477,7 +481,7 @@ public class Base
 					System.out.println(e1);
 				}
                 
-            }});
+            }});*/
 		
 		
 		gb.setConstraints(worklessInstructorButton, c);
